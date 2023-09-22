@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "ZipDir": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"C:\\Users\\USER\\Documents\""
+    },
+    "Raw output": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"C:\\Users\\USER\\Documents\" -r"
+    },
+    "Dot dot folder": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"..\\..\\..\""
+    },
+    "Exclude": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"C:\\users\\USER\" -e \"\\users\\USER\\onedrive\""
+    }
+  }
+}
