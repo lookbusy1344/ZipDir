@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+<Target Name="SetSourceRevisionId" BeforeTargets="InitializeSourceControlInformation">
+    <Exec Command="git describe --long --always --dirty=+ --broken --exclude=* --abbrev=40" ConsoleToMSBuild="True" IgnoreExitCode="False">
+      <Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput" />
+    </Exec>
+</Target>
+
+  <PropertyGroup>
+    <Version>0.9.1.0</Version> 
+	<InformationalVersion>$(SourceRevisionId)</InformationalVersion> 
+
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	
+    <PublishAot>true</PublishAot>
+
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+	
+	<AnalysisModeDesign>All</AnalysisModeDesign>
+    <AnalysisModeSecurity>All</AnalysisModeSecurity>
+	<AnalysisModePerformance>All</AnalysisModePerformance>
+	<AnalysisModeReliability>All</AnalysisModeReliability>
+	<AnalysisModeUsage>All</AnalysisModeUsage>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="OneOf" Version="3.0.263" />
+  </ItemGroup>
+
+</Project>
