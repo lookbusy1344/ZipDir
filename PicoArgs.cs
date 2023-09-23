@@ -4,21 +4,25 @@ using System.Text.RegularExpressions;
 
 namespace PicoArgs_dotnet;
 
-/* PICOARGS_DOTNET usage:
+/*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
+    https://github.com/lookbusy1344/PicoArgs-dotnet
+
+    Version 1.0.1 - 23 Sept 2023
+
+    Example usage:
 
 	var pico = new PicoArgs(args);
 
-	bool verbose = pico.Contains("-v", "--verbose");			// true if any of these switches are present
-	string pattern = pico.GetParamOpt("-t", "--pattern") ?? "*.txt";	// optional parameter
-	string requiredpath = pico.GetParam("-p", "--path");			// mandatory parameter, throws if not present
-	string[] files = pico.GetMultipleParams("-f", "--file");		// multiple parameters returned in string[]
-	string command = pico.GetCommand();					// first parameter, throws if not present
+	bool verbose = pico.Contains("-v", "--verbose");  // true if any of these switches are present
+	string pattern = pico.GetParamOpt("-t", "--pattern") ?? "*.txt";  // optional parameter
+	string requiredpath = pico.GetParam("-p", "--path");  // mandatory parameter, throws if not present
+	string[] files = pico.GetMultipleParams("-f", "--file");  // multiple parameters returned in string[]
+	string command = pico.GetCommand();  // first parameter, throws if not present
 
-	pico.Finished();							// We are done. Throw if there are any unused parameters
+	pico.Finished();  // We are done. Throw if there are any unused parameters
 
 
-  INSPIRED BY PICO-ARGS FOR RUST:
-  https://github.com/RazrFalcon/pico-args
+    INSPIRED BY PICO-ARGS FOR RUST: https://github.com/RazrFalcon/pico-args
 
 */
 
