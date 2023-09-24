@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.0.1 - 23 Sept 2023
+    Version 1.0.2 - 24 Sept 2023
 
     Example usage:
 
@@ -129,10 +129,10 @@ public class PicoArgs
 		if (index == args.Count - 1)
 			throw new PicoArgsException($"Expected value after \"{option}\"");
 
-		// is the next parameter another switch?
+		// is the next parameter another switch? This might be ok, eg --text "--something"
 		var str = args[index + 1];
-		if (str.StartsWith('-'))
-			throw new PicoArgsException($"Value for \"{option}\" is \"{str}\"");
+		//if (str.StartsWith('-'))
+		//	throw new PicoArgsException($"Value for \"{option}\" is \"{str}\"");
 
 		// consume the switch and the value
 		args.RemoveRange(index, 2);
