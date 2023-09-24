@@ -35,7 +35,8 @@ internal static class Program
 			if (!raw)
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 
-			Run(config);
+			WriteMessage($"Folder: {config.Folder}, pattern: {config.Pattern}", true);
+			Searcher.SearchFolder(config.Folder, config.Pattern, config.Excludes);
 			return 0;
 		}
 		catch (HelpException)
@@ -49,6 +50,7 @@ internal static class Program
 		{
 			// any other exception
 			Console.WriteLine($"ERROR: {ex.Message}\r\n");
+			Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 			Console.WriteLine(CommandLineMessage);
 			return 1;
 		}
@@ -76,15 +78,6 @@ internal static class Program
 		var excludes = pico.GetMultipleParams("-e", "--exclude");
 
 		return new ZipDirConfig(folder, pattern, excludes, raw);
-	}
-
-	/// <summary>
-	/// Deal with command line arguments, and call the searcher
-	/// </summary>
-	private static void Run(ZipDirConfig config)
-	{
-		WriteMessage($"Folder: {config.Folder}, pattern: {config.Pattern}", true);
-		Searcher.SearchFolder(config.Folder, config.Pattern, config.Excludes);
 	}
 
 	/// <summary>
