@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.0.2 - 24 Sept 2023
+    Version 1.0.99 - 25 Sept 2023
 
     Example usage:
 
@@ -31,19 +31,19 @@ namespace PicoArgs_dotnet;
 /// </summary>
 public class PicoArgs
 {
-	private readonly List<string> args;
+	private readonly List<KeyValue> args;
 	private bool finished;
 
 	/// <summary>
 	/// Build a PicoArgs from the command line arguments
 	/// </summary>
-	public PicoArgs(string[] args) => this.args = args.ToList();
+	public PicoArgs(IEnumerable<string> args, bool recogniseequals = true) => this.args = args.Select(a => KeyValue.Build(a, recogniseequals)).ToList();
 
 #if DEBUG
 	/// <summary>
 	/// Build a PicoArgs from a single string, for testing
 	/// </summary>
-	public PicoArgs(string args) => this.args = StringSplitter.SplitParams(args);
+	public PicoArgs(string args) : this(StringSplitter.SplitParams(args)) { }
 #endif
 
 	/// <summary>
@@ -62,7 +62,7 @@ public class PicoArgs
 		{
 			if (!o.StartsWith('-')) throw new ArgumentException("Must start with -", nameof(options));
 
-			var index = args.IndexOf(o);
+			var index = args.FindIndex(a => a.Key == o);
 			if (index >= 0)
 			{
 				// found switch so consume it and return
@@ -121,24 +121,33 @@ public class PicoArgs
 			if (!o.StartsWith('-')) throw new ArgumentException("Must start with -", nameof(options));
 
 		// do we have this switch on command line?
-		var option = args.Find(a => options.Contains(a));
-		if (option == null) return null;
+		var index = args.FindIndex(a => options.Contains(a.Key));
+		if (index == -1) return null;
+
+		// check if this key has an identified value
+		var item = args[index];
+		if (item.Value != null)
+		{
+			args.RemoveAt(index);
+			return item.Value;
+		}
+
+		// otherwise, there is no identified value, so we need to look at the next parameter
 
 		// is it the last parameter?
-		var index = args.IndexOf(option);
 		if (index == args.Count - 1)
-			throw new PicoArgsException($"Expected value after \"{option}\"");
+			throw new PicoArgsException($"Expected value after \"{item.Key}\"");
 
-		// is the next parameter another switch? This might be ok, eg --text "--something"
-		var str = args[index + 1];
-		//if (str.StartsWith('-'))
-		//	throw new PicoArgsException($"Value for \"{option}\" is \"{str}\"");
+		// grab and check the next parameter
+		var seconditem = args[index + 1];
+		if (seconditem.Value != null)
+			throw new PicoArgsException($"Cannot identify value for param \"{item.Key}\", followed by \"{seconditem.Key}\" and \"{seconditem.Value}\"");
 
-		// consume the switch and the value
+		// consume the switch and the seperate value
 		args.RemoveRange(index, 2);
 
 		// return the value
-		return str;
+		return seconditem.Key;
 	}
 
 	/// <summary>
@@ -150,7 +159,7 @@ public class PicoArgs
 		if (args.Count == 0) throw new PicoArgsException("Expected command");
 
 		// check for a switch
-		var cmd = args[0];
+		var cmd = args[0].Key;
 		if (cmd.StartsWith('-')) throw new PicoArgsException($"Expected command not \"{cmd}\"");
 
 		// consume the command, and return it
@@ -161,7 +170,7 @@ public class PicoArgs
 	/// <summary>
 	/// Return any unused command line parameters
 	/// </summary>
-	public IReadOnlyList<string> UnconsumedArgs => args;
+	public IReadOnlyList<KeyValue> UnconsumedArgs => args;
 
 	/// <summary>
 	/// Return true if there are no unused command line parameters
@@ -215,6 +224,58 @@ public sealed class PicoArgsDisposable : PicoArgs, IDisposable
 	{
 		if (!SuppressCheck)
 			Finished();
+	}
+}
+
+/// <summary>
+/// a key and optional identified value eg --key=value becomes "--key" and "value"
+/// </summary>
+public record class KeyValue(string Key, string? Value)
+{
+	public static KeyValue Build(string arg, bool recogniseequals)
+	{
+		ArgumentNullException.ThrowIfNull(arg);
+
+		// if arg does not start with a dash, this cannot be a key+value eg --key=value vs key=value
+		if (!recogniseequals || !arg.StartsWith('-')) return new KeyValue(arg, null);
+
+		// locate positions of quotes and equals
+		var singlequote = IndexOf(arg, '\'') ?? int.MaxValue;
+		var doublequote = IndexOf(arg, '\"') ?? int.MaxValue;
+		var eq = IndexOf(arg, '=');
+
+		if (eq < singlequote && eq < doublequote)
+		{
+			// if the equals is before the quotes, then split on the equals
+			var parts = arg.Split(new char[] { '=' }, 2);
+			return new KeyValue(parts[0], TrimQuote(parts[1]));
+		}
+		else
+			return new KeyValue(arg, null);
+	}
+
+	/// <summary>
+	/// Index of a char in a string, or null if not found
+	/// </summary>
+	private static int? IndexOf(string str, char c)
+	{
+		var i = str.IndexOf(c);
+		return i < 0 ? null : i;
+	}
+
+	/// <summary>
+	/// If the string starts and ends with the same quote, remove them eg "hello world" -> hello world
+	/// </summary>
+	private static string TrimQuote(string str)
+	{
+		if (string.IsNullOrEmpty(str) || str.Length < 2) return str;
+
+		var c = str[0];
+		if (c is '\'' or '\"')
+			if (str[^1] == c)
+				return str[1..^1];    // if ends with same quote, remove them
+
+		return str;   // just return original string
 	}
 }
 
