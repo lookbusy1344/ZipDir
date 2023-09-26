@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.0.99 - 25 Sept 2023
+    Version 1.1.0 - 26 Sept 2023
 
     Example usage:
 
@@ -43,7 +43,7 @@ public class PicoArgs
 	/// <summary>
 	/// Build a PicoArgs from a single string, for testing
 	/// </summary>
-	public PicoArgs(string args) : this(StringSplitter.SplitParams(args)) { }
+	public PicoArgs(string args, bool recogniseequals = true) : this(StringSplitter.SplitParams(args), recogniseequals) { }
 #endif
 
 	/// <summary>
@@ -83,7 +83,7 @@ public class PicoArgs
 	{
 		CheckFinished();
 		var s = GetParamOpt(options);
-		return s ?? throw new PicoArgsException($"Expected value for \"{string.Join(", ", options)}\"");
+		return s ?? throw new PicoArgsException(10, $"Expected value for \"{string.Join(", ", options)}\"");
 	}
 
 	/// <summary>
@@ -136,12 +136,12 @@ public class PicoArgs
 
 		// is it the last parameter?
 		if (index == args.Count - 1)
-			throw new PicoArgsException($"Expected value after \"{item.Key}\"");
+			throw new PicoArgsException(20, $"Expected value after \"{item.Key}\"");
 
 		// grab and check the next parameter
 		var seconditem = args[index + 1];
 		if (seconditem.Value != null)
-			throw new PicoArgsException($"Cannot identify value for param \"{item.Key}\", followed by \"{seconditem.Key}\" and \"{seconditem.Value}\"");
+			throw new PicoArgsException(30, $"Cannot identify value for param \"{item.Key}\", followed by \"{seconditem.Key}\" and \"{seconditem.Value}\"");
 
 		// consume the switch and the seperate value
 		args.RemoveRange(index, 2);
@@ -156,11 +156,11 @@ public class PicoArgs
 	public string GetCommand()
 	{
 		CheckFinished();
-		if (args.Count == 0) throw new PicoArgsException("Expected command");
+		if (args.Count == 0) throw new PicoArgsException(40, "Expected command");
 
 		// check for a switch
 		var cmd = args[0].Key;
-		if (cmd.StartsWith('-')) throw new PicoArgsException($"Expected command not \"{cmd}\"");
+		if (cmd.StartsWith('-')) throw new PicoArgsException(50, $"Expected command not \"{cmd}\"");
 
 		// consume the command, and return it
 		args.RemoveAt(0);
@@ -183,7 +183,7 @@ public class PicoArgs
 	public void Finished()
 	{
 		if (args.Count > 0)
-			throw new PicoArgsException($"Unrecognised parameter(s): {string.Join(", ", args)}");
+			throw new PicoArgsException(60, $"Unrecognised parameter(s): {string.Join(", ", args)}");
 
 		finished = true;
 	}
@@ -194,7 +194,7 @@ public class PicoArgs
 	private void CheckFinished()
 	{
 		if (finished)
-			throw new PicoArgsException("Cannot use PicoArgs after calling Finished()");
+			throw new PicoArgsException(70, "Cannot use PicoArgs after calling Finished()");
 	}
 }
 
@@ -284,9 +284,15 @@ public record class KeyValue(string Key, string? Value)
 /// </summary>
 public class PicoArgsException : Exception
 {
-	public PicoArgsException(string message) : base(message) { }
+	public int Code { get; init; }
+
+	public PicoArgsException(int code, string message) : base(message) => this.Code = code;
 
 	public PicoArgsException()
+	{
+	}
+
+	public PicoArgsException(string message) : base(message)
 	{
 	}
 
