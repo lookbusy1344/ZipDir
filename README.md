@@ -1,5 +1,7 @@
 # ZipDir
 
+[![CodeQL](https://github.com/lookbusy1344/ZipDir/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lookbusy1344/ZipDir/actions/workflows/github-code-scanning/codeql)
+
 A small command line utility to list the contents of ZIP files. Given a folder, it recursively searches for ZIP files and lists their contents. This includes nested ZIP files.
 
 ```
