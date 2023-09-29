@@ -19,6 +19,8 @@ internal static class Program
 
 	private static int Main(string[] args)
 	{
+		JS_Tools.ValueEquality.CheckAssembly();
+
 		var ver = GitVersion.VersionInfo.Get();
 
 		try
