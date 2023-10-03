@@ -33,4 +33,9 @@
     <PackageReference Include="OneOf" Version="3.0.263" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- https://github.com/lookbusy1344/RecordValueAnalyser -->
+    <ProjectReference Include="C:\dev\Projects\RecordValueAnalyser\RecordAnalyser\RecordAnalyser.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
 </Project>
