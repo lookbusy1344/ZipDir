@@ -86,17 +86,12 @@ internal static class ZipInternals
 					Program.WriteMessage($"Error in nested zip: {nestedZipName}");
 				}
 			}
-			else if (lastChar is '/' or '\\')
-			{
-				// its a folder, we can skip it
-				continue;
-			}
-			else
+			else if (lastChar is not ('/' or '\\')) // ignore folders
 			{
 				string filename;
 				if (nestedEntry.FullName.Contains('\\'))
 				{
-					// path separator is \, so replace with / for consistency
+					// path separator is '\', so replace with '/' for consistency
 					var s = nestedEntry.FullName.Replace('\\', '/');
 					filename = $"{containername}/{s}";
 				}
