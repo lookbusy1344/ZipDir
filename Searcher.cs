@@ -67,6 +67,9 @@ internal static class ZipInternals
 		{
 			token.ThrowIfCancellationRequested();
 
+			if (nestedEntry.FullName.Length == 0) continue;
+			var lastChar = nestedEntry.FullName[^1];
+
 			if (nestedEntry.FullName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
 			{
 				// its another nested zip file, we need to open it and search inside
@@ -83,15 +86,23 @@ internal static class ZipInternals
 					Program.WriteMessage($"Error in nested zip: {nestedZipName}");
 				}
 			}
-			//else if (nestedEntry.FullName.EndsWith('/'))
-			//{
-			//	// its a folder, we can skip it
-			//	continue;
-			//}
+			else if (lastChar is '/' or '\\')
+			{
+				// its a folder, we can skip it
+				continue;
+			}
 			else
 			{
-				// inside a zip, folder are delimited with /
-				var filename = $"{containername}/{nestedEntry.FullName}";
+				string filename;
+				if (nestedEntry.FullName.Contains('\\'))
+				{
+					// path separator is \, so replace with / for consistency
+					var s = nestedEntry.FullName.Replace('\\', '/');
+					filename = $"{containername}/{s}";
+				}
+				else
+					filename = $"{containername}/{nestedEntry.FullName}";
+
 				Console.WriteLine(filename);
 			}
 		}
