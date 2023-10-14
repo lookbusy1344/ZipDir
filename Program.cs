@@ -19,7 +19,7 @@ internal static class Program
 
 	private static int Main(string[] args)
 	{
-		var ver = new SafeRef<GitVersion.VersionInfo>(GitVersion.VersionInfo.Get());
+		var ver = GitVersion.VersionInfo.Get();
 
 		try
 		{
@@ -33,7 +33,7 @@ internal static class Program
 			Program.raw = config.Raw;
 
 			if (!raw)
-				Console.WriteLine($"ZipDir - list contents of zip files {ver.Ref.GetVersionHash(12)}");
+				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 
 			WriteMessage($"Folder: {config.Folder}, pattern: {config.Pattern}", true);
 			Searcher.SearchFolder(config.Folder, config.Pattern, config.Excludes);
@@ -42,7 +42,7 @@ internal static class Program
 		catch (HelpException)
 		{
 			// --help has been requested
-			Console.WriteLine($"ZipDir - list contents of zip files {ver.Ref.GetVersionHash(20)}");
+			Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(20)}");
 			Console.WriteLine(CommandLineMessage);
 			return 0;
 		}
@@ -50,7 +50,7 @@ internal static class Program
 		{
 			// any other exception
 			Console.WriteLine($"ERROR: {ex.Message}\r\n");
-			Console.WriteLine($"ZipDir - list contents of zip files {ver.Ref.GetVersionHash(12)}");
+			Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 			Console.WriteLine(CommandLineMessage);
 			return 1;
 		}
