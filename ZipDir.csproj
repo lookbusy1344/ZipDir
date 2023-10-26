@@ -30,7 +30,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="lookbusy1344.RecordValueAnalyser" Version="1.0.0">
+    <PackageReference Include="lookbusy1344.RecordValueAnalyser" Version="1.0.100">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
