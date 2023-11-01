@@ -19,22 +19,13 @@ public record class ZipDirConfig(string Folder, string Pattern, IReadOnlyList<st
 }
 
 /// <summary>
-/// Unit type for help requested
-/// </summary>
-public readonly record struct HelpRequested();
-
-/// <summary>
 /// Exception thrown when help is requested
 /// </summary>
 public class HelpException : Exception
 {
 	public HelpException(string message) : base(message) { }
 
-	public HelpException()
-	{
-	}
+	public HelpException() { }
 
-	public HelpException(string message, Exception innerException) : base(message, innerException)
-	{
-	}
+	public HelpException(string message, Exception innerException) : base(message, innerException) { }
 }
