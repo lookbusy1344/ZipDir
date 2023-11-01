@@ -1,5 +1,4 @@
-﻿using OneOf;
-using PicoArgs_dotnet;
+﻿using PicoArgs_dotnet;
 
 namespace ZipDir;
 
@@ -25,18 +24,13 @@ internal static class Program
 		{
 			var parsed = ParseCommandLine(args);
 
-			// cant exit from a lambda, so throwing exception instead
-			var config = parsed.Match(
-				_ => throw new HelpException(),
-				c => c);
-
-			Program.raw = config.Raw;
+			Program.raw = parsed.Raw;
 
 			if (!raw)
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 
-			WriteMessage($"Folder: {config.Folder}, pattern: {config.Pattern}", true);
-			Searcher.SearchFolder(config.Folder, config.Pattern, config.Excludes);
+			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}", true);
+			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes);
 			return 0;
 		}
 		catch (HelpException)
@@ -59,7 +53,7 @@ internal static class Program
 	/// <summary>
 	/// Wrap the call to PicoArgs in a using block, so it automatically throws if there are any errors
 	/// </summary>
-	private static OneOf<HelpRequested, ZipDirConfig> ParseCommandLine(string[] args)
+	private static ZipDirConfig ParseCommandLine(string[] args)
 	{
 		using var pico = new PicoArgsDisposable(args);
 
@@ -68,7 +62,7 @@ internal static class Program
 		{
 			// if we want help, just bail here. Supress the warning about not using other parameters
 			pico.SuppressCheck = true;
-			return new HelpRequested();
+			throw new HelpException();
 		}
 
 		// parse the rest of the command line
