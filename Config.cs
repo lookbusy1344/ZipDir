@@ -15,7 +15,7 @@ public record class ZipDirConfig(string Folder, string Pattern, IReadOnlyList<st
 		&& Excludes.SequenceEqual(other.Excludes)   // this is the reason we cant use default Equals
 		&& Raw == other.Raw;
 
-	public override int GetHashCode() => HashCode.Combine(Folder, Pattern, Raw);
+	public override int GetHashCode() => HashCode.Combine(Folder, Pattern, Raw); // dont use Combine(.., Excludes, ..) because it doesnt work!
 }
 
 /// <summary>
