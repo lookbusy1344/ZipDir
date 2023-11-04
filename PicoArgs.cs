@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.1.0 - 26 Sept 2023
+    Version 1.1.1 - 04 Nov 2023
 
     Example usage:
 
@@ -230,7 +230,7 @@ public sealed class PicoArgsDisposable : PicoArgs, IDisposable
 /// <summary>
 /// a key and optional identified value eg --key=value becomes "--key" and "value"
 /// </summary>
-public record class KeyValue(string Key, string? Value)
+public readonly record struct KeyValue(string Key, string? Value)
 {
 	public static KeyValue Build(string arg, bool recogniseequals)
 	{
