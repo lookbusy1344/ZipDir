@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.1.1 - 04 Nov 2023
+    Version 1.1.2 - 12 Nov 2023
 
     Example usage:
 
@@ -37,13 +37,13 @@ public class PicoArgs
 	/// <summary>
 	/// Build a PicoArgs from the command line arguments
 	/// </summary>
-	public PicoArgs(IEnumerable<string> args, bool recogniseequals = true) => this.args = args.Select(a => KeyValue.Build(a, recogniseequals)).ToList();
+	public PicoArgs(IEnumerable<string> args, bool recogniseEquals = true) => this.args = args.Select(a => KeyValue.Build(a, recogniseEquals)).ToList();
 
 #if DEBUG
 	/// <summary>
 	/// Build a PicoArgs from a single string, for testing
 	/// </summary>
-	public PicoArgs(string args, bool recogniseequals = true) : this(StringSplitter.SplitParams(args), recogniseequals) { }
+	public PicoArgs(string args, bool recogniseEquals = true) : this(StringSplitter.SplitParams(args), recogniseEquals) { }
 #endif
 
 	/// <summary>
@@ -232,19 +232,19 @@ public sealed class PicoArgsDisposable : PicoArgs, IDisposable
 /// </summary>
 public readonly record struct KeyValue(string Key, string? Value)
 {
-	public static KeyValue Build(string arg, bool recogniseequals)
+	public static KeyValue Build(string arg, bool recogniseEquals)
 	{
 		ArgumentNullException.ThrowIfNull(arg);
 
 		// if arg does not start with a dash, this cannot be a key+value eg --key=value vs key=value
-		if (!recogniseequals || !arg.StartsWith('-')) return new KeyValue(arg, null);
+		if (!recogniseEquals || !arg.StartsWith('-')) return new KeyValue(arg, null);
 
 		// locate positions of quotes and equals
-		var singlequote = IndexOf(arg, '\'') ?? int.MaxValue;
-		var doublequote = IndexOf(arg, '\"') ?? int.MaxValue;
+		var singleQuote = IndexOf(arg, '\'') ?? int.MaxValue;
+		var doubleQuote = IndexOf(arg, '\"') ?? int.MaxValue;
 		var eq = IndexOf(arg, '=');
 
-		if (eq < singlequote && eq < doublequote)
+		if (eq < singleQuote && eq < doubleQuote)
 		{
 			// if the equals is before the quotes, then split on the equals
 			var parts = arg.Split(new char[] { '=' }, 2);
@@ -257,10 +257,10 @@ public readonly record struct KeyValue(string Key, string? Value)
 	/// <summary>
 	/// Index of a char in a string, or null if not found
 	/// </summary>
-	private static int? IndexOf(string str, char c)
+	private static int? IndexOf(string str, char chr)
 	{
-		var i = str.IndexOf(c);
-		return i < 0 ? null : i;
+		var pos = str.IndexOf(chr);
+		return pos < 0 ? null : pos;
 	}
 
 	/// <summary>
