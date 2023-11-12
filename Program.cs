@@ -77,12 +77,12 @@ internal static class Program
 	/// <summary>
 	/// Display helpful message is not in --raw mode
 	/// </summary>
-	public static void WriteMessage(string msg, bool blankline = false)
+	public static void WriteMessage(string msg, bool blankLine = false)
 	{
 		if (!raw)
 		{
 			Console.WriteLine(msg);
-			if (blankline) Console.WriteLine();
+			if (blankLine) Console.WriteLine();
 		}
 	}
 
