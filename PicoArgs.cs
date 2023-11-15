@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.1.2 - 12 Nov 2023
+    Version 1.1.3 - 15 Nov 2023
 
     Example usage:
 
@@ -29,15 +29,13 @@ namespace PicoArgs_dotnet;
 /// <summary>
 /// Tiny command line argument parser
 /// </summary>
-public class PicoArgs
+/// <remarks>
+/// Build a PicoArgs from the command line arguments
+/// </remarks>
+public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 {
-	private readonly List<KeyValue> args;
+	private readonly List<KeyValue> args = args.Select(a => KeyValue.Build(a, recogniseEquals)).ToList();
 	private bool finished;
-
-	/// <summary>
-	/// Build a PicoArgs from the command line arguments
-	/// </summary>
-	public PicoArgs(IEnumerable<string> args, bool recogniseEquals = true) => this.args = args.Select(a => KeyValue.Build(a, recogniseEquals)).ToList();
 
 #if DEBUG
 	/// <summary>
@@ -101,7 +99,7 @@ public class PicoArgs
 			result.Add(s);
 		}
 
-		return result.ToArray();
+		return [.. result];
 	}
 
 	/// <summary>
@@ -196,6 +194,11 @@ public class PicoArgs
 		if (finished)
 			throw new PicoArgsException(70, "Cannot use PicoArgs after calling Finished()");
 	}
+
+	/// <summary>
+	/// Optimization for splitting key=value pairs
+	/// </summary>
+	internal static readonly char[] SplitOnChars = ['='];
 }
 
 /// <summary>
@@ -247,7 +250,7 @@ public readonly record struct KeyValue(string Key, string? Value)
 		if (eq < singleQuote && eq < doubleQuote)
 		{
 			// if the equals is before the quotes, then split on the equals
-			var parts = arg.Split(new char[] { '=' }, 2);
+			var parts = arg.Split(PicoArgs.SplitOnChars, 2);
 			return new KeyValue(parts[0], TrimQuote(parts[1]));
 		}
 		else
