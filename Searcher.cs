@@ -28,7 +28,8 @@ internal static class Searcher
 		{
 			try
 			{
-				ZipInternals.CheckZipFile(file);
+				var zip = new ZipInternals(file);
+				zip.CheckZipFile();
 			}
 			catch
 			{
@@ -47,21 +48,21 @@ internal static class Searcher
 	}
 }
 
-internal static class ZipInternals
+internal class ZipInternals(string path, CancellationToken token = default)
 {
 	/// <summary>
 	/// Wrapper around zip search to handle nested zips
 	/// </summary>
-	public static void CheckZipFile(string path, CancellationToken token = default)
+	public void CheckZipFile()
 	{
 		using var archive = ZipFile.OpenRead(path);
-		RecursiveArchiveCheck(path, archive, token);
+		RecursiveArchiveCheck(path, archive);
 	}
 
 	/// <summary>
 	/// Given a zip archive, loop through and list the contents. Recursively calls for nested zips
 	/// </summary>
-	private static void RecursiveArchiveCheck(string containerName, ZipArchive archive, CancellationToken token)
+	private void RecursiveArchiveCheck(string containerName, ZipArchive archive)
 	{
 		foreach (var nestedEntry in archive.Entries)
 		{
@@ -77,11 +78,9 @@ internal static class ZipInternals
 				try
 				{
 					using var nestedStream = nestedEntry.Open();
-#pragma warning disable CA2000 // Dispose objects before losing scope - THIS SEEMS TO BE A BUG IN .NET 8
 					using var nestedArchive = new ZipArchive(nestedStream);
-#pragma warning restore CA2000 // Dispose objects before losing scope
 
-					RecursiveArchiveCheck(nestedZipName, nestedArchive, token);
+					RecursiveArchiveCheck(nestedZipName, nestedArchive);
 				}
 				catch
 				{
