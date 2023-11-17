@@ -68,7 +68,6 @@ internal static class ZipInternals
 			token.ThrowIfCancellationRequested();
 
 			if (nestedEntry.FullName.Length == 0) continue;
-			var lastChar = nestedEntry.FullName[^1];
 
 			if (IsNestedZip(nestedEntry))
 			{
@@ -88,7 +87,7 @@ internal static class ZipInternals
 					Program.WriteMessage($"Error in nested zip: {nestedZipName}");
 				}
 			}
-			else if (lastChar is not ('/' or '\\')) // ignore folders
+			else if (nestedEntry.FullName[^1] is not ('/' or '\\')) // check the last character, so we can ignore folders
 				Console.WriteLine(EntryFilename(containerName, nestedEntry));
 		}
 	}
