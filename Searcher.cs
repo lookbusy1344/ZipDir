@@ -111,4 +111,48 @@ internal static class ZipInternals
 		else
 			return $"{containerName}/{entry.FullName}";
 	}
+
+	private static readonly byte[] magicNumberZip = [0x50, 0x4B, 0x03, 0x04];
+
+	/// <summary>
+	/// Check the magic number of a physical file to see if it is a zip archive
+	/// </summary>
+	private static bool IsZipArchive(string filePath)
+	{
+		try
+		{
+			var fileBytes = new byte[magicNumberZip.Length];
+
+			using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+			_ = file.Read(fileBytes, 0, fileBytes.Length);
+
+			return fileBytes.SequenceEqual(magicNumberZip);
+		}
+		catch (Exception)
+		{
+			// some error in the zip file
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Check the magic number of a zip entry to see if it is a zip archive
+	/// </summary>
+	private static bool IsZipArchive(ZipArchiveEntry entry)
+	{
+		try
+		{
+			var entryBytes = new byte[magicNumberZip.Length];
+
+			using var entryStream = entry.Open();
+			_ = entryStream.Read(entryBytes, 0, entryBytes.Length);
+
+			return entryBytes.SequenceEqual(magicNumberZip);
+		}
+		catch (Exception)
+		{
+			// some error in the zip file
+			return false;
+		}
+	}
 }
