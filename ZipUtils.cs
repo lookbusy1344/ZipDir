@@ -1,0 +1,83 @@
+﻿using System.IO.Compression;
+
+namespace ZipDir;
+
+internal static class ZipUtils
+{
+	/// <summary>
+	/// Magic number for a zip file
+	/// </summary>
+	private static readonly byte[] magicNumberZip = [0x50, 0x4B, 0x03, 0x04];
+
+	/// <summary>
+	/// Is this a zip file? Check the extension
+	/// </summary>
+	public static bool IsZipArchiveFilename(string filename) => filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
+
+	/// <summary>
+	/// Does this entry represent a nested zip file? Check the extension
+	/// </summary>
+	public static bool IsZipArchiveFilename(ZipArchiveEntry entry) => IsZipArchiveFilename(entry.FullName);
+
+	/// <summary>
+	/// Build the full path to this entry
+	/// </summary>
+	public static string EntryFilename(string containerName, ZipArchiveEntry entry)
+	{
+		if (entry.FullName.Contains('\\'))
+		{
+			// path separator is '\', so replace with '/' for consistency
+			var s = entry.FullName.Replace('\\', '/');
+			return $"{containerName}/{s}";
+		}
+		else
+			return $"{containerName}/{entry.FullName}";
+	}
+
+	/// <summary>
+	/// Check the magic number of a physical file to see if it is a zip archive
+	/// </summary>
+	public static bool IsZipArchiveContent(string filePath)
+	{
+		try
+		{
+			using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+			return CheckZipStream(fileStream);
+		}
+		catch (Exception)
+		{
+			// some error in the zip file
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Check the magic number of a zip entry to see if it is a zip archive
+	/// </summary>
+	public static bool IsZipArchiveContent(ZipArchiveEntry entry)
+	{
+		try
+		{
+			using var entryStream = entry.Open();
+			return CheckZipStream(entryStream);
+		}
+		catch (Exception)
+		{
+			// some error in the zip file
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Check if this open stream contains the magic bytes for a zip archive
+	/// </summary>
+	private static bool CheckZipStream(Stream stream)
+	{
+		Span<byte> contents = stackalloc byte[magicNumberZip.Length];   // avoid heap allocation
+
+		if (stream.Read(contents) != magicNumberZip.Length)
+			throw new ArgumentException("Zip file is too small");
+
+		return contents.SequenceEqual(magicNumberZip);
+	}
+}

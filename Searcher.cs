@@ -69,7 +69,7 @@ internal static class ZipInternals
 
 			if (nestedEntry.FullName.Length == 0) continue;
 
-			if (IsNestedZip(nestedEntry))
+			if (ZipUtils.IsZipArchiveFilename(nestedEntry))
 			{
 				// its another nested zip file, we need to open it and search inside
 				var nestedZipName = $"{containerName}/{nestedEntry.FullName}";
@@ -88,76 +88,7 @@ internal static class ZipInternals
 				}
 			}
 			else if (nestedEntry.FullName[^1] is not ('/' or '\\')) // check the last character, so we can ignore folders
-				Console.WriteLine(EntryFilename(containerName, nestedEntry));
+				Console.WriteLine(ZipUtils.EntryFilename(containerName, nestedEntry));
 		}
-	}
-
-	/// <summary>
-	/// Does this entry represent a nested zip file? Check the extension
-	/// </summary>
-	private static bool IsNestedZip(ZipArchiveEntry entry) => entry.FullName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
-
-	/// <summary>
-	/// Build the full path to this entry
-	/// </summary>
-	private static string EntryFilename(string containerName, ZipArchiveEntry entry)
-	{
-		if (entry.FullName.Contains('\\'))
-		{
-			// path separator is '\', so replace with '/' for consistency
-			var s = entry.FullName.Replace('\\', '/');
-			return $"{containerName}/{s}";
-		}
-		else
-			return $"{containerName}/{entry.FullName}";
-	}
-
-	private static readonly byte[] magicNumberZip = [0x50, 0x4B, 0x03, 0x04];
-
-	/// <summary>
-	/// Check the magic number of a physical file to see if it is a zip archive
-	/// </summary>
-	private static bool IsZipArchive(string filePath)
-	{
-		try
-		{
-			using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-			return CheckZipStream(fileStream);
-		}
-		catch (Exception)
-		{
-			// some error in the zip file
-			return false;
-		}
-	}
-
-	/// <summary>
-	/// Check the magic number of a zip entry to see if it is a zip archive
-	/// </summary>
-	private static bool IsZipArchive(ZipArchiveEntry entry)
-	{
-		try
-		{
-			using var entryStream = entry.Open();
-			return CheckZipStream(entryStream);
-		}
-		catch (Exception)
-		{
-			// some error in the zip file
-			return false;
-		}
-	}
-
-	/// <summary>
-	/// Check if this open stream contains the magic bytes for a zip archive
-	/// </summary>
-	private static bool CheckZipStream(Stream stream)
-	{
-		Span<byte> contents = stackalloc byte[magicNumberZip.Length];   // avoid heap allocation
-
-		if (stream.Read(contents) != magicNumberZip.Length)
-			throw new ArgumentException("Zip file is too small");
-
-		return contents.SequenceEqual(magicNumberZip);
 	}
 }
