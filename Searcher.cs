@@ -70,7 +70,7 @@ internal static class ZipInternals
 			if (nestedEntry.FullName.Length == 0) continue;
 			var lastChar = nestedEntry.FullName[^1];
 
-			if (nestedEntry.FullName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+			if (IsNestedZip(nestedEntry))
 			{
 				// its another nested zip file, we need to open it and search inside
 				var nestedZipName = $"{containerName}/{nestedEntry.FullName}";
@@ -89,19 +89,27 @@ internal static class ZipInternals
 				}
 			}
 			else if (lastChar is not ('/' or '\\')) // ignore folders
-			{
-				string fileName;
-				if (nestedEntry.FullName.Contains('\\'))
-				{
-					// path separator is '\', so replace with '/' for consistency
-					var s = nestedEntry.FullName.Replace('\\', '/');
-					fileName = $"{containerName}/{s}";
-				}
-				else
-					fileName = $"{containerName}/{nestedEntry.FullName}";
-
-				Console.WriteLine(fileName);
-			}
+				Console.WriteLine(EntryFilename(containerName, nestedEntry));
 		}
+	}
+
+	/// <summary>
+	/// Does this entry represent a nested zip file? Check the extension
+	/// </summary>
+	private static bool IsNestedZip(ZipArchiveEntry entry) => entry.FullName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
+
+	/// <summary>
+	/// Build the full path to this entry
+	/// </summary>
+	private static string EntryFilename(string containerName, ZipArchiveEntry entry)
+	{
+		if (entry.FullName.Contains('\\'))
+		{
+			// path separator is '\', so replace with '/' for consistency
+			var s = entry.FullName.Replace('\\', '/');
+			return $"{containerName}/{s}";
+		}
+		else
+			return $"{containerName}/{entry.FullName}";
 	}
 }
