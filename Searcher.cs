@@ -121,10 +121,10 @@ internal static class ZipInternals
 	{
 		try
 		{
-			var fileBytes = new byte[magicNumberZip.Length];
+			Span<byte> fileBytes = stackalloc byte[magicNumberZip.Length];
 
 			using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-			_ = file.Read(fileBytes, 0, fileBytes.Length);
+			_ = file.Read(fileBytes);
 
 			return fileBytes.SequenceEqual(magicNumberZip);
 		}
@@ -142,10 +142,10 @@ internal static class ZipInternals
 	{
 		try
 		{
-			var entryBytes = new byte[magicNumberZip.Length];
+			Span<byte> entryBytes = stackalloc byte[magicNumberZip.Length];
 
 			using var entryStream = entry.Open();
-			_ = entryStream.Read(entryBytes, 0, entryBytes.Length);
+			_ = entryStream.Read(entryBytes);
 
 			return entryBytes.SequenceEqual(magicNumberZip);
 		}
