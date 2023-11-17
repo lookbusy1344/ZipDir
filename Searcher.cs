@@ -121,12 +121,8 @@ internal static class ZipInternals
 	{
 		try
 		{
-			Span<byte> fileBytes = stackalloc byte[magicNumberZip.Length];
-
-			using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-			_ = file.Read(fileBytes);
-
-			return fileBytes.SequenceEqual(magicNumberZip);
+			using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+			return CheckZipStream(fileStream);
 		}
 		catch (Exception)
 		{
@@ -142,17 +138,26 @@ internal static class ZipInternals
 	{
 		try
 		{
-			Span<byte> entryBytes = stackalloc byte[magicNumberZip.Length];
-
 			using var entryStream = entry.Open();
-			_ = entryStream.Read(entryBytes);
-
-			return entryBytes.SequenceEqual(magicNumberZip);
+			return CheckZipStream(entryStream);
 		}
 		catch (Exception)
 		{
 			// some error in the zip file
 			return false;
 		}
+	}
+
+	/// <summary>
+	/// Check if this open stream contains the magic bytes for a zip archive
+	/// </summary>
+	private static bool CheckZipStream(Stream stream)
+	{
+		Span<byte> contents = stackalloc byte[magicNumberZip.Length];   // avoid heap allocation
+
+		if (stream.Read(contents) != magicNumberZip.Length)
+			throw new ArgumentException("Zip file is too small");
+
+		return contents.SequenceEqual(magicNumberZip);
 	}
 }
