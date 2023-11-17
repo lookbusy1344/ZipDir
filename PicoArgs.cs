@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.1.3 - 15 Nov 2023
+    Version 1.1.4 - 16 Nov 2023
 
     Example usage:
 
@@ -151,10 +151,15 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	/// <summary>
 	/// Return and consume the first command line parameter. Throws if not present
 	/// </summary>
-	public string GetCommand()
+	public string GetCommand() => GetCommandOpt() ?? throw new PicoArgsException(40, "Expected command");
+
+	/// <summary>
+	/// Return and consume the first command line parameter. Returns null if not present
+	/// </summary>
+	public string? GetCommandOpt()
 	{
 		CheckFinished();
-		if (args.Count == 0) throw new PicoArgsException(40, "Expected command");
+		if (args.Count == 0) return null;
 
 		// check for a switch
 		var cmd = args[0].Key;
