@@ -5,9 +5,10 @@ namespace ZipDir;
 internal static class ZipUtils
 {
 	/// <summary>
-	/// Magic number for a zip file
+	/// Magic number for a zip file. ReadOnlySpan is immutable and will not reallocate in this setting
+	/// See Framework Design Guidelines, 3rd Edition, sec 9.12 page 438
 	/// </summary>
-	private static readonly byte[] magicNumberZip = [0x50, 0x4B, 0x03, 0x04];
+	private static ReadOnlySpan<byte> MagicNumberZip => [0x50, 0x4B, 0x03, 0x04];
 
 	/// <summary>
 	/// Is this a zip file? Check the extension
@@ -73,11 +74,11 @@ internal static class ZipUtils
 	/// </summary>
 	private static bool CheckZipStream(Stream stream)
 	{
-		Span<byte> contents = stackalloc byte[magicNumberZip.Length];   // avoid heap allocation
+		Span<byte> contents = stackalloc byte[MagicNumberZip.Length];   // avoid heap allocation
 
-		if (stream.Read(contents) != magicNumberZip.Length)
+		if (stream.Read(contents) != MagicNumberZip.Length)
 			throw new ArgumentException("Zip file is too small");
 
-		return contents.SequenceEqual(magicNumberZip);
+		return contents.SequenceEqual(MagicNumberZip);
 	}
 }
