@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.1.4 - 16 Nov 2023
+    Version 1.1.5 - 18 Nov 2023
 
     Example usage:
 
@@ -18,6 +18,7 @@ namespace PicoArgs_dotnet;
 	string requiredpath = pico.GetParam("-p", "--path");  // mandatory parameter, throws if not present
 	string[] files = pico.GetMultipleParams("-f", "--file");  // multiple parameters returned in string[]
 	string command = pico.GetCommand();  // first parameter, throws if not present
+	string commandopt = pico.GetCommandOpt();  // first parameter, null if not present
 
 	pico.Finished();  // We are done. Throw if there are any unused parameters
 
@@ -199,11 +200,6 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 		if (finished)
 			throw new PicoArgsException(70, "Cannot use PicoArgs after calling Finished()");
 	}
-
-	/// <summary>
-	/// Optimization for splitting key=value pairs
-	/// </summary>
-	internal static readonly char[] SplitOnChars = ['='];
 }
 
 /// <summary>
@@ -255,7 +251,7 @@ public readonly record struct KeyValue(string Key, string? Value)
 		if (eq < singleQuote && eq < doubleQuote)
 		{
 			// if the equals is before the quotes, then split on the equals
-			var parts = arg.Split(PicoArgs.SplitOnChars, 2);
+			var parts = arg.Split('=', 2);
 			return new KeyValue(parts[0], TrimQuote(parts[1]));
 		}
 		else
