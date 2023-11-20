@@ -30,7 +30,7 @@ internal static class Program
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 
 			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}", true);
-			Searcher.SearchFolderByExt(parsed.Folder, parsed.Pattern, parsed.Excludes);
+			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes, true);
 			return 0;
 		}
 		catch (HelpException)

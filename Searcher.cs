@@ -8,7 +8,7 @@ internal static class Searcher
 	/// <summary>
 	/// Find all .zip files in this folder, and list their contents
 	/// </summary>
-	public static void SearchFolderByExt(string path, string fileSpec, IReadOnlyList<string> exclude)
+	public static void SearchFolder(string path, string fileSpec, IReadOnlyList<string> exclude, bool byExtension)
 	{
 		var allFiles = Directory.GetFiles(path, fileSpec, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
 
@@ -22,46 +22,19 @@ internal static class Searcher
 				.ToArray()
 		};
 
-		Program.WriteMessage($"{files.Length} zip file(s) identified...", true);
+		if (byExtension)
+			Program.WriteMessage($"{files.Length} zip file(s) identified...", true);
 
 		// for each file
 		foreach (var file in files)
 		{
 			try
 			{
-				var zip = new ZipInternals(true);
-				zip.CheckZipFile(file);
-			}
-			catch
-			{
-				Program.WriteMessage($"Error in zip: {file}");
-			}
-		}
-	}
-
-	public static void SearchFolderByContent(string path, string fileSpec, IReadOnlyList<string> exclude)
-	{
-		var allFiles = Directory.GetFiles(path, fileSpec, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
-
-		// filter out any files that match the exclude pattern. This is a micro-optimization
-		var files = exclude.Count switch
-		{
-			0 => allFiles,
-			1 => allFiles.Where(file => !file.Contains(exclude[0], StringComparison.OrdinalIgnoreCase))
-				.ToArray(),
-			_ => allFiles.Where(file => !exclude.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))
-				.ToArray()
-		};
-
-		// for each file, check if it contains the magic bytes
-		foreach (var file in files)
-		{
-			if (!ZipUtils.IsZipArchiveContent(file)) continue;
-
-			try
-			{
-				var zip = new ZipInternals(false);
-				zip.CheckZipFile(file);
+				if (byExtension || ZipUtils.IsZipArchiveContent(file))
+				{
+					var zip = new ZipInternals(byExtension);
+					zip.CheckZipFile(file);
+				}
 			}
 			catch
 			{
