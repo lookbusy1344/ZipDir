@@ -76,8 +76,8 @@ internal static class ZipUtils
 	{
 		Span<byte> contents = stackalloc byte[MagicNumberZip.Length];   // avoid heap allocation
 
-		if (stream.Read(contents) != MagicNumberZip.Length)
-			throw new ArgumentException("Zip file is too small");
+		if (stream.Read(contents) < MagicNumberZip.Length)
+			return false;
 
 		return contents.SequenceEqual(MagicNumberZip);
 	}
