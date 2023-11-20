@@ -24,6 +24,8 @@ internal static class Searcher
 
 		if (byExtension)
 			Program.WriteMessage($"{files.Length} zip file(s) identified...", true);
+		else
+			Program.WriteMessage($"{files.Length} potential file(s) identified...", true);
 
 		// for each file
 		foreach (var file in files)

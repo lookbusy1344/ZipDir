@@ -29,8 +29,9 @@ internal static class Program
 			if (!raw)
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 
-			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}", true);
-			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes, true);
+			var str = parsed.ByExtension ? "extension" : "magic number";
+			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}, searching by {str}", true);
+			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes, parsed.ByExtension);
 			return 0;
 		}
 		catch (HelpException)
@@ -67,11 +68,17 @@ internal static class Program
 
 		// parse the rest of the command line
 		var raw = pico.Contains("-r", "--raw");
+		var byExtension = !pico.Contains("-b", "--byte");
 		var folder = Searcher.NormalizeFolder(pico.GetParamOpt("-f", "--folder") ?? ".");
-		var pattern = pico.GetParamOpt("-p", "--pattern") ?? "*.zip";
+		var pattern = pico.GetParamOpt("-p", "--pattern");
 		var excludes = pico.GetMultipleParams("-e", "--exclude");
 
-		return new ZipDirConfig(folder, pattern, excludes, raw);
+		// if no pattern is specified:
+		// when searching by extension, the default should be *.zip
+		// when searching by magic number, the default should be *
+		pattern ??= byExtension ? "*.zip" : "*";
+
+		return new ZipDirConfig(byExtension, folder, pattern, excludes, raw);
 	}
 
 	/// <summary>
@@ -93,6 +100,7 @@ internal static class Program
             -f, --folder <path>   Folder to search (default ".")
             -p, --pattern <str>   Zip file pattern (default "*.zip")
             -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
+            -b, --byte            Identify zip files by magic number, not extension
             -r, --raw             Raw output, for piping
             -h, --help, -?        Help information
 
