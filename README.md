@@ -23,6 +23,7 @@ Options:
   -f, --folder <path>   Folder to search (default ".")
   -p, --pattern <str>   Zip file pattern (default "*.zip")
   -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
+  -b, --byte            Identify zip files by magic number, not extension
   -r, --raw             Raw output, for piping
   -h, --help, -?        Help information
 
