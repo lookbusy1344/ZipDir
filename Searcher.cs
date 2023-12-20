@@ -85,7 +85,7 @@ internal sealed class ZipInternals(bool byExtension = true)
 				{
 					using var nestedStream = nestedEntry.Open();
 #pragma warning disable CA2000 // Dispose objects before losing scope - THIS SEEMS TO BE A BUG IN .NET 8
-					using var nestedArchive = new ZipArchive(nestedStream);
+					using var nestedArchive = new ZipArchive(nestedStream, ZipArchiveMode.Read, leaveOpen: true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
 					RecursiveArchiveCheck(nestedZipName, nestedArchive, token);
