@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.1.5 - 18 Nov 2023
+    Version 1.1.6 - 20 Dec 2023
 
     Example usage:
 
@@ -64,6 +64,10 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 			var index = args.FindIndex(a => a.Key == o);
 			if (index >= 0)
 			{
+				// if this argument has a value, throw eg "--verbose=true" when we just expected "--verbose"
+				if (args[index].Value != null)
+					throw new PicoArgsException(80, $"Unexpected value for \"{string.Join(", ", options)}\"");
+
 				// found switch so consume it and return
 				args.RemoveAt(index);
 				return true;
