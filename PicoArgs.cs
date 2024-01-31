@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.1.6 - 20 Dec 2023
+    Version 1.2.0 - 31 Jan 2024
 
     Example usage:
 
@@ -79,17 +79,6 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	}
 
 	/// <summary>
-	/// Get a string value from the command line, throws is not present
-	/// eg -a "value" or --foldera "value"
-	/// </summary>
-	public string GetParam(params string[] options)
-	{
-		CheckFinished();
-		var s = GetParamOpt(options);
-		return s ?? throw new PicoArgsException(10, $"Expected value for \"{string.Join(", ", options)}\"");
-	}
-
-	/// <summary>
 	/// Get multiple parameters from the command line, or empty array if not present
 	/// eg -a value1 -a value2 will return ["value1", "value2"]
 	/// </summary>
@@ -106,6 +95,12 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 
 		return [.. result];
 	}
+
+	/// <summary>
+	/// Get a string value from the command line, throws is not present
+	/// eg -a "value" or --foldera "value"
+	/// </summary>
+	public string GetParam(params string[] options) => GetParamOpt(options) ?? throw new PicoArgsException(10, $"Expected value for \"{string.Join(", ", options)}\"");
 
 	/// <summary>
 	/// Get a string value from the command line, or null if not present
