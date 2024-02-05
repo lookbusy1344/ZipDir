@@ -7,7 +7,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.2.0 - 31 Jan 2024
+    Version 1.2.0 - 05 Feb 2024
 
     Example usage:
 
@@ -260,26 +260,13 @@ public readonly record struct KeyValue(string Key, string? Value)
 	/// <summary>
 	/// Index of a char in a string, or null if not found
 	/// </summary>
-	private static int? IndexOf(string str, char chr)
-	{
-		var pos = str.IndexOf(chr);
-		return pos < 0 ? null : pos;
-	}
+	private static int? IndexOf(string str, char chr) => str.IndexOf(chr) is int pos && pos >= 0 ? pos : null;
 
 	/// <summary>
 	/// If the string starts and ends with the same quote, remove them eg "hello world" -> hello world
 	/// </summary>
-	private static string TrimQuote(string str)
-	{
-		if (string.IsNullOrEmpty(str) || str.Length < 2) return str;
-
-		var c = str[0];
-		if (c is '\'' or '\"')
-			if (str[^1] == c)
-				return str[1..^1];    // if ends with same quote, remove them
-
-		return str;   // just return original string
-	}
+	private static string TrimQuote(string str) =>
+		(str.Length > 1 && (str[0] is '\'' or '\"') && str[^1] == str[0]) ? str[1..^1] : str;
 }
 
 /// <summary>
@@ -291,17 +278,11 @@ public class PicoArgsException : Exception
 
 	public PicoArgsException(int code, string message) : base(message) => this.Code = code;
 
-	public PicoArgsException()
-	{
-	}
+	public PicoArgsException() { }
 
-	public PicoArgsException(string message) : base(message)
-	{
-	}
+	public PicoArgsException(string message) : base(message) { }
 
-	public PicoArgsException(string message, Exception innerException) : base(message, innerException)
-	{
-	}
+	public PicoArgsException(string message, Exception innerException) : base(message, innerException) { }
 }
 
 #if DEBUG
