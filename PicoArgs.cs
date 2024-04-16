@@ -1,13 +1,9 @@
-#if DEBUG
-using System.Text.RegularExpressions;
-#endif
-
 namespace PicoArgs_dotnet;
 
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.2.1 - 11 Mar 2024
+    Version 1.3.0 - 11 Apr 2024
 
     Example usage:
 
@@ -37,13 +33,6 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 {
 	private readonly List<KeyValue> args = args.Select(a => KeyValue.Build(a, recogniseEquals)).ToList();
 	private bool finished;
-
-#if DEBUG
-	/// <summary>
-	/// Build a PicoArgs from a single string, for testing
-	/// </summary>
-	public PicoArgs(string args, bool recogniseEquals = true) : this(StringSplitter.SplitParams(args), recogniseEquals) { }
-#endif
 
 	/// <summary>
 	/// Get a boolean value from the command line, returns TRUE if found
@@ -204,17 +193,8 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 /// <summary>
 /// Tiny command line argument parser. This version implements IDisposable, and will throw if there are any unused command line parameters
 /// </summary>
-public sealed class PicoArgsDisposable : PicoArgs, IDisposable
+public sealed class PicoArgsDisposable(IEnumerable<string> args) : PicoArgs(args), IDisposable
 {
-	public PicoArgsDisposable(string[] args) : base(args) { }
-
-#if DEBUG
-	/// <summary>
-	/// Build a PicoArgs from a single string, for testing
-	/// </summary>
-	public PicoArgsDisposable(string args) : base(args) { }
-#endif
-
 	/// <summary>
 	/// If true, supress the check for unused command line parameters
 	/// </summary>
@@ -284,23 +264,3 @@ public class PicoArgsException : Exception
 
 	public PicoArgsException(string message, Exception innerException) : base(message, innerException) { }
 }
-
-#if DEBUG
-/// <summary>
-/// Helper class to split a string into parameters, respecting quotes
-/// </summary>
-internal static partial class StringSplitter
-{
-	/// <summary>
-	/// Split a string into parameters, respecting quotes
-	/// </summary>
-	/// <returns></returns>
-	public static List<string> SplitParams(string s) => SplitOnSpacesRespectQuotes().Split(s).Where(i => i != "\"").ToList();
-
-	/// <summary>
-	/// Regex to split a string into parameters, respecting quotes
-	/// </summary>
-	[GeneratedRegex("(?<=\")(.*?)(?=\")|\\s+")]
-	private static partial Regex SplitOnSpacesRespectQuotes();
-}
-#endif
