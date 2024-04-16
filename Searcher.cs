@@ -8,7 +8,7 @@ internal static class Searcher
 	/// <summary>
 	/// Find all .zip files in this folder, and list their contents
 	/// </summary>
-	public static void SearchFolder(string path, string fileSpec, IReadOnlyList<string> exclude, bool byExtension)
+	internal static void SearchFolder(string path, string fileSpec, IReadOnlyList<string> exclude, bool byExtension)
 	{
 		var allFiles = Directory.GetFiles(path, fileSpec, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
 
@@ -48,7 +48,7 @@ internal static class Searcher
 	/// <summary>
 	/// Expand the folder name to a full path, removing things like ..\..
 	/// </summary>
-	public static string NormalizeFolder(string folderName)
+	internal static string NormalizeFolder(string folderName)
 	{
 		var dirinfo = new DirectoryInfo(folderName);
 		return dirinfo.FullName;
@@ -60,7 +60,7 @@ internal sealed class ZipInternals(bool byExtension = true)
 	/// <summary>
 	/// Wrapper around zip search to handle nested zips
 	/// </summary>
-	public void CheckZipFile(string path, CancellationToken token = default)
+	internal void CheckZipFile(string path, CancellationToken token = default)
 	{
 		using var archive = ZipFile.OpenRead(path);
 		RecursiveArchiveCheck(path, archive, token);

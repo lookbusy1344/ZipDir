@@ -84,7 +84,7 @@ internal static class Program
 	/// <summary>
 	/// Display helpful message is not in --raw mode
 	/// </summary>
-	public static void WriteMessage(string msg, bool blankLine = false)
+	internal static void WriteMessage(string msg, bool blankLine = false)
 	{
 		if (!raw)
 		{

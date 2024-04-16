@@ -13,17 +13,17 @@ internal static class ZipUtils
 	/// <summary>
 	/// Is this a zip file? Check the extension
 	/// </summary>
-	public static bool IsZipArchiveFilename(string filename) => filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
+	internal static bool IsZipArchiveFilename(string filename) => filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Does this entry represent a nested zip file? Check the extension
 	/// </summary>
-	public static bool IsZipArchiveFilename(ZipArchiveEntry entry) => IsZipArchiveFilename(entry.FullName);
+	internal static bool IsZipArchiveFilename(ZipArchiveEntry entry) => IsZipArchiveFilename(entry.FullName);
 
 	/// <summary>
 	/// Build the full path to this entry
 	/// </summary>
-	public static string EntryFilename(string containerName, ZipArchiveEntry entry)
+	internal static string EntryFilename(string containerName, ZipArchiveEntry entry)
 	{
 		if (entry.FullName.Contains('\\'))
 		{
@@ -38,7 +38,7 @@ internal static class ZipUtils
 	/// <summary>
 	/// Check the magic number of a physical file to see if it is a zip archive
 	/// </summary>
-	public static bool IsZipArchiveContent(string filePath)
+	internal static bool IsZipArchiveContent(string filePath)
 	{
 		try
 		{
@@ -55,7 +55,7 @@ internal static class ZipUtils
 	/// <summary>
 	/// Check the magic number of a zip entry to see if it is a zip archive
 	/// </summary>
-	public static bool IsZipArchiveContent(ZipArchiveEntry entry)
+	internal static bool IsZipArchiveContent(ZipArchiveEntry entry)
 	{
 		try
 		{
