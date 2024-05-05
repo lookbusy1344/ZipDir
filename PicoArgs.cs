@@ -3,7 +3,7 @@ namespace PicoArgs_dotnet;
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
     https://github.com/lookbusy1344/PicoArgs-dotnet
 
-    Version 1.3.0 - 11 Apr 2024
+    Version 1.3.1 - 04 May 2024
 
     Example usage:
 
@@ -40,22 +40,26 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	public bool Contains(params string[] options)
 	{
 		CheckFinished();
-		if (options == null || options.Length == 0)
+		if (options == null || options.Length == 0) {
 			throw new ArgumentException("Must specify at least one option", nameof(options));
+		}
 
 		// no args left
-		if (args.Count == 0) return false;
+		if (args.Count == 0) {
+			return false;
+		}
 
-		foreach (var o in options)
-		{
-			if (!o.StartsWith('-')) throw new ArgumentException("Must start with -", nameof(options));
+		foreach (var o in options) {
+			if (!o.StartsWith('-')) {
+				throw new ArgumentException("Must start with -", nameof(options));
+			}
 
 			var index = args.FindIndex(a => a.Key == o);
-			if (index >= 0)
-			{
+			if (index >= 0) {
 				// if this argument has a value, throw eg "--verbose=true" when we just expected "--verbose"
-				if (args[index].Value != null)
+				if (args[index].Value != null) {
 					throw new PicoArgsException(80, $"Unexpected value for \"{string.Join(", ", options)}\"");
+				}
 
 				// found switch so consume it and return
 				args.RemoveAt(index);
@@ -75,10 +79,12 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	{
 		CheckFinished();
 		var result = new List<string>();
-		while (true)
-		{
+		while (true) {
 			var s = GetParamOpt(options);
-			if (s == null) break;   // nothing else found, break out of loop
+			if (s == null) {
+				break;   // nothing else found, break out of loop
+			}
+
 			result.Add(s);
 		}
 
@@ -98,23 +104,30 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	public string? GetParamOpt(params string[] options)
 	{
 		CheckFinished();
-		if (options == null || options.Length == 0)
+		if (options == null || options.Length == 0) {
 			throw new ArgumentException("Must specify at least one option", nameof(options));
+		}
 
-		if (args.Count == 0) return null;
+		if (args.Count == 0) {
+			return null;
+		}
 
 		// check all options are switches
-		foreach (var o in options)
-			if (!o.StartsWith('-')) throw new ArgumentException("Must start with -", nameof(options));
+		foreach (var o in options) {
+			if (!o.StartsWith('-')) {
+				throw new ArgumentException("Must start with -", nameof(options));
+			}
+		}
 
 		// do we have this switch on command line?
 		var index = args.FindIndex(a => options.Contains(a.Key));
-		if (index == -1) return null;
+		if (index == -1) {
+			return null;
+		}
 
 		// check if this key has an identified value
 		var item = args[index];
-		if (item.Value != null)
-		{
+		if (item.Value != null) {
 			args.RemoveAt(index);
 			return item.Value;
 		}
@@ -122,13 +135,15 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 		// otherwise, there is no identified value, so we need to look at the next parameter
 
 		// is it the last parameter?
-		if (index == args.Count - 1)
+		if (index == args.Count - 1) {
 			throw new PicoArgsException(20, $"Expected value after \"{item.Key}\"");
+		}
 
 		// grab and check the next parameter
 		var seconditem = args[index + 1];
-		if (seconditem.Value != null)
+		if (seconditem.Value != null) {
 			throw new PicoArgsException(30, $"Cannot identify value for param \"{item.Key}\", followed by \"{seconditem.Key}\" and \"{seconditem.Value}\"");
+		}
 
 		// consume the switch and the seperate value
 		args.RemoveRange(index, 2);
@@ -148,11 +163,15 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	public string? GetCommandOpt()
 	{
 		CheckFinished();
-		if (args.Count == 0) return null;
+		if (args.Count == 0) {
+			return null;
+		}
 
 		// check for a switch
 		var cmd = args[0].Key;
-		if (cmd.StartsWith('-')) throw new PicoArgsException(50, $"Expected command not \"{cmd}\"");
+		if (cmd.StartsWith('-')) {
+			throw new PicoArgsException(50, $"Expected command not \"{cmd}\"");
+		}
 
 		// consume the command, and return it
 		args.RemoveAt(0);
@@ -174,8 +193,9 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	/// </summary>
 	public void Finished()
 	{
-		if (args.Count > 0)
+		if (args.Count > 0) {
 			throw new PicoArgsException(60, $"Unrecognised parameter(s): {string.Join(", ", args)}");
+		}
 
 		finished = true;
 	}
@@ -185,8 +205,9 @@ public class PicoArgs(IEnumerable<string> args, bool recogniseEquals = true)
 	/// </summary>
 	private void CheckFinished()
 	{
-		if (finished)
+		if (finished) {
 			throw new PicoArgsException(70, "Cannot use PicoArgs after calling Finished()");
+		}
 	}
 }
 
@@ -205,8 +226,9 @@ public sealed class PicoArgsDisposable(IEnumerable<string> args) : PicoArgs(args
 	/// </summary>
 	public void Dispose()
 	{
-		if (!SuppressCheck)
+		if (!SuppressCheck) {
 			Finished();
+		}
 	}
 }
 
@@ -220,21 +242,22 @@ public readonly record struct KeyValue(string Key, string? Value)
 		ArgumentNullException.ThrowIfNull(arg);
 
 		// if arg does not start with a dash, this cannot be a key+value eg --key=value vs key=value
-		if (!recogniseEquals || !arg.StartsWith('-')) return new KeyValue(arg, null);
+		if (!recogniseEquals || !arg.StartsWith('-')) {
+			return new KeyValue(arg, null);
+		}
 
 		// locate positions of quotes and equals
 		var singleQuote = IndexOf(arg, '\'') ?? int.MaxValue;
 		var doubleQuote = IndexOf(arg, '\"') ?? int.MaxValue;
 		var eq = IndexOf(arg, '=');
 
-		if (eq < singleQuote && eq < doubleQuote)
-		{
+		if (eq < singleQuote && eq < doubleQuote) {
 			// if the equals is before the quotes, then split on the equals
 			var parts = arg.Split('=', 2);
 			return new KeyValue(parts[0], TrimQuote(parts[1]));
-		}
-		else
+		} else {
 			return new KeyValue(arg, null);
+		}
 	}
 
 	/// <summary>

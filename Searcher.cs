@@ -13,8 +13,7 @@ internal static class Searcher
 		var allFiles = Directory.GetFiles(path, fileSpec, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
 
 		// filter out any files that match the exclude pattern. This is a micro-optimization
-		var files = exclude.Count switch
-		{
+		var files = exclude.Count switch {
 			0 => allFiles,
 			1 => allFiles.Where(file => !file.Contains(exclude[0], StringComparison.OrdinalIgnoreCase))
 				.ToArray(),
@@ -22,24 +21,21 @@ internal static class Searcher
 				.ToArray()
 		};
 
-		if (byExtension)
+		if (byExtension) {
 			Program.WriteMessage($"{files.Length} zip file(s) identified...", true);
-		else
+		} else {
 			Program.WriteMessage($"{files.Length} potential file(s) identified...", true);
+		}
 
 		// for each file
-		foreach (var file in files)
-		{
-			try
-			{
-				if (byExtension || ZipUtils.IsZipArchiveContent(file))
-				{
+		foreach (var file in files) {
+			try {
+				if (byExtension || ZipUtils.IsZipArchiveContent(file)) {
 					var zip = new ZipInternals(byExtension);
 					zip.CheckZipFile(file);
 				}
 			}
-			catch
-			{
+			catch {
 				Program.WriteMessage($"Error in zip: {file}");
 			}
 		}
@@ -71,18 +67,17 @@ internal sealed class ZipInternals(bool byExtension = true)
 	/// </summary>
 	private void RecursiveArchiveCheck(string containerName, ZipArchive archive, CancellationToken token)
 	{
-		foreach (var nestedEntry in archive.Entries)
-		{
+		foreach (var nestedEntry in archive.Entries) {
 			token.ThrowIfCancellationRequested();
 
-			if (nestedEntry.FullName.Length == 0) continue;
+			if (nestedEntry.FullName.Length == 0) {
+				continue;
+			}
 
-			if (IsZipArchive(nestedEntry))
-			{
+			if (IsZipArchive(nestedEntry)) {
 				// its another nested zip file, we need to open it and search inside
 				var nestedZipName = $"{containerName}/{nestedEntry.FullName}";
-				try
-				{
+				try {
 					using var nestedStream = nestedEntry.Open();
 #pragma warning disable CA2000 // Dispose objects before losing scope - THIS SEEMS TO BE A BUG IN .NET 8
 					using var nestedArchive = new ZipArchive(nestedStream, ZipArchiveMode.Read, leaveOpen: true);
@@ -90,13 +85,12 @@ internal sealed class ZipInternals(bool byExtension = true)
 
 					RecursiveArchiveCheck(nestedZipName, nestedArchive, token);
 				}
-				catch
-				{
+				catch {
 					Program.WriteMessage($"Error in nested zip: {nestedZipName}");
 				}
-			}
-			else if (nestedEntry.FullName[^1] is not ('/' or '\\')) // check the last character, so we can ignore folders
+			} else if (nestedEntry.FullName[^1] is not ('/' or '\\')) { // check the last character, so we can ignore folders
 				Console.WriteLine(ZipUtils.EntryFilename(containerName, nestedEntry));
+			}
 		}
 	}
 

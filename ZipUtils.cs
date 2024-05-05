@@ -25,14 +25,13 @@ internal static class ZipUtils
 	/// </summary>
 	internal static string EntryFilename(string containerName, ZipArchiveEntry entry)
 	{
-		if (entry.FullName.Contains('\\'))
-		{
+		if (entry.FullName.Contains('\\')) {
 			// path separator is '\', so replace with '/' for consistency
 			var s = entry.FullName.Replace('\\', '/');
 			return $"{containerName}/{s}";
-		}
-		else
+		} else {
 			return $"{containerName}/{entry.FullName}";
+		}
 	}
 
 	/// <summary>
@@ -40,13 +39,11 @@ internal static class ZipUtils
 	/// </summary>
 	internal static bool IsZipArchiveContent(string filePath)
 	{
-		try
-		{
+		try {
 			using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 			return CheckZipStream(fileStream);
 		}
-		catch (Exception)
-		{
+		catch (Exception) {
 			// some error in the zip file
 			return false;
 		}
@@ -57,13 +54,11 @@ internal static class ZipUtils
 	/// </summary>
 	internal static bool IsZipArchiveContent(ZipArchiveEntry entry)
 	{
-		try
-		{
+		try {
 			using var entryStream = entry.Open();
 			return CheckZipStream(entryStream);
 		}
-		catch (Exception)
-		{
+		catch (Exception) {
 			// some error in the zip file
 			return false;
 		}
@@ -76,8 +71,9 @@ internal static class ZipUtils
 	{
 		Span<byte> contents = stackalloc byte[MagicNumberZip.Length];   // avoid heap allocation
 
-		if (stream.Read(contents) < MagicNumberZip.Length)
+		if (stream.Read(contents) < MagicNumberZip.Length) {
 			return false;
+		}
 
 		return contents.SequenceEqual(MagicNumberZip);
 	}

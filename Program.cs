@@ -20,29 +20,27 @@ internal static class Program
 	{
 		var ver = GitVersion.VersionInfo.Get();
 
-		try
-		{
+		try {
 			var parsed = ParseCommandLine(args);
 
 			Program.raw = parsed.Raw;
 
-			if (!raw)
+			if (!raw) {
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
+			}
 
 			var str = parsed.ByExtension ? "extension" : "magic number";
 			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}, searching by {str}", true);
 			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes, parsed.ByExtension);
 			return 0;
 		}
-		catch (HelpException)
-		{
+		catch (HelpException) {
 			// --help has been requested
 			Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(20)}");
 			Console.WriteLine(CommandLineMessage);
 			return 0;
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			// any other exception
 			Console.WriteLine($"ERROR: {ex.Message}\r\n");
 			Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
@@ -59,8 +57,7 @@ internal static class Program
 		using var pico = new PicoArgsDisposable(args);
 
 		var help = pico.Contains("-h", "-?", "--help");
-		if (help)
-		{
+		if (help) {
 			// if we want help, just bail here. Supress the warning about not using other parameters
 			pico.SuppressCheck = true;
 			throw new HelpException();
@@ -86,10 +83,11 @@ internal static class Program
 	/// </summary>
 	internal static void WriteMessage(string msg, bool blankLine = false)
 	{
-		if (!raw)
-		{
+		if (!raw) {
 			Console.WriteLine(msg);
-			if (blankLine) Console.WriteLine();
+			if (blankLine) {
+				Console.WriteLine();
+			}
 		}
 	}
 
