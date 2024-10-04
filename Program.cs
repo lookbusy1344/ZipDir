@@ -68,7 +68,7 @@ internal static class Program
 		var byExtension = !pico.Contains("-b", "--byte");
 		var folder = Searcher.NormalizeFolder(pico.GetParamOpt("-f", "--folder") ?? ".");
 		var pattern = pico.GetParamOpt("-p", "--pattern");
-		var excludes = pico.GetMultipleParams("-e", "--exclude");
+		var excludes = pico.GetMultipleParams("-e", "--exclude").ToArray();
 
 		// if no pattern is specified:
 		// when searching by extension, the default should be *.zip
