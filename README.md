@@ -34,7 +34,7 @@ Example:
 
 ## Build
 
-ZipDir is written in C# and built with .NET 8. Build with
+ZipDir is written in C# and built with .NET 9. Build with
 
 ```
 dotnet publish ZipDir.csproj -r win-x64 -c Release
