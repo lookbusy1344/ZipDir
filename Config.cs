@@ -16,7 +16,7 @@ internal sealed record class ZipDirConfig(bool ByExtension, string Folder, strin
 		&& Excludes.SequenceEqual(other.Excludes)   // this is the reason we cant use default Equals
 		&& Raw == other.Raw;
 
-	public override int GetHashCode() => HashCode.Combine(ByExtension, Folder, Pattern, Raw); // dont use Combine(.., Excludes, ..) because it doesnt work!
+	public override int GetHashCode() => HashCode.Combine(ByExtension, Folder, Pattern, Excludes.Count, Raw); // dont use Combine(.., Excludes, ..) because it doesnt work!
 }
 
 /// <summary>
