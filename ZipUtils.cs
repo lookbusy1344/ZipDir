@@ -29,9 +29,9 @@ internal static class ZipUtils
 			// path separator is '\', so replace with '/' for consistency
 			var s = entry.FullName.Replace('\\', '/');
 			return $"{containerName}/{s}";
-		} else {
-			return $"{containerName}/{entry.FullName}";
 		}
+
+		return $"{containerName}/{entry.FullName}";
 	}
 
 	/// <summary>
