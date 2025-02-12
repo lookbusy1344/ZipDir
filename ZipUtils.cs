@@ -1,6 +1,6 @@
-﻿using System.IO.Compression;
+﻿namespace ZipDir;
 
-namespace ZipDir;
+using System.IO.Compression;
 
 internal static class ZipUtils
 {

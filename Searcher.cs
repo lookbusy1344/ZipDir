@@ -1,7 +1,7 @@
-﻿using System.IO.Compression;
-using System.Runtime.CompilerServices;
+﻿namespace ZipDir;
 
-namespace ZipDir;
+using System.IO.Compression;
+using System.Runtime.CompilerServices;
 
 internal static class Searcher
 {
@@ -15,10 +15,8 @@ internal static class Searcher
 		// filter out any files that match the exclude pattern. This is a micro-optimization
 		var files = exclude.Count switch {
 			0 => allFiles,
-			1 => allFiles.Where(file => !file.Contains(exclude[0], StringComparison.OrdinalIgnoreCase))
-				.ToArray(),
-			_ => allFiles.Where(file => !exclude.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))
-				.ToArray()
+			1 => [.. allFiles.Where(file => !file.Contains(exclude[0], StringComparison.OrdinalIgnoreCase))],
+			_ => [.. allFiles.Where(file => !exclude.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))]
 		};
 
 		if (byExtension) {

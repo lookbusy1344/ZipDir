@@ -1,6 +1,6 @@
-﻿using PicoArgs_dotnet;
+﻿namespace ZipDir;
 
-namespace ZipDir;
+using PicoArgs_dotnet;
 
 /*	Displayed syntax should probably be something like:
  *	\path\to\zip.zip/path/to/file.txt
