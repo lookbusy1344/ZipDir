@@ -70,11 +70,6 @@ internal static class ZipUtils
 	private static bool CheckZipStream(Stream stream)
 	{
 		Span<byte> contents = stackalloc byte[MagicNumberZip.Length];   // avoid heap allocation
-
-		if (stream.Read(contents) < MagicNumberZip.Length) {
-			return false;
-		}
-
-		return contents.SequenceEqual(MagicNumberZip);
+		return stream.Read(contents) >= MagicNumberZip.Length && contents.SequenceEqual(MagicNumberZip);
 	}
 }
