@@ -36,7 +36,7 @@ internal static class Program
 
 			var str = parsed.ByExtension ? "extension" : "magic number";
 			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}, searching by {str}", true);
-			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes, parsed.ByExtension, parsed.SingleThread);
+			Searcher.SearchFolder(parsed);
 			return 0;
 		}
 		catch (HelpException) {

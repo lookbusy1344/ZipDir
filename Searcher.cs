@@ -9,30 +9,30 @@ internal static class Searcher
 	/// <summary>
 	/// Find all .zip files in this folder, and list their contents (multi-threaded)
 	/// </summary>
-	internal static void SearchFolder(string path, string fileSpec, IReadOnlyList<string> exclude, bool byExtension, bool singleThread)
+	internal static void SearchFolder(ZipDirConfig config)
 	{
-		var allFiles = Directory.GetFiles(path, fileSpec, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
+		var allFiles = Directory.GetFiles(config.Folder, config.Pattern, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
 
 		// filter out any files that match the exclude pattern. This is a micro-optimization
-		var files = exclude.Count switch {
+		var files = config.Excludes.Count switch {
 			0 => allFiles,
-			1 => [.. allFiles.Where(file => !file.Contains(exclude[0], StringComparison.OrdinalIgnoreCase))],
-			_ => [.. allFiles.Where(file => !exclude.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))]
+			1 => [.. allFiles.Where(file => !file.Contains(config.Excludes[0], StringComparison.OrdinalIgnoreCase))],
+			_ => [.. allFiles.Where(file => !config.Excludes.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))]
 		};
 
-		if (byExtension) {
+		if (config.ByExtension) {
 			Program.WriteMessage($"{files.Length} zip file(s) identified...", true);
 		} else {
 			Program.WriteMessage($"{files.Length} potential file(s) identified...", true);
 		}
 
-		var parallelism = singleThread ? 1 : Environment.ProcessorCount;
+		var parallelism = config.SingleThread ? 1 : Environment.ProcessorCount;
 
 		// Use parallelism to process zip files on specified number of cores
 		_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelism }, file => {
 			try {
-				if (byExtension || ZipUtils.IsZipArchiveContent(file)) {
-					var zip = new ZipInternals(byExtension);
+				if (config.ByExtension || ZipUtils.IsZipArchiveContent(file)) {
+					var zip = new ZipInternals(config.ByExtension);
 					zip.CheckZipFile(file);
 				}
 			}
