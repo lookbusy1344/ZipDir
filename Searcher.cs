@@ -2,11 +2,12 @@
 
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 internal static class Searcher
 {
 	/// <summary>
-	/// Find all .zip files in this folder, and list their contents
+	/// Find all .zip files in this folder, and list their contents (multi-threaded)
 	/// </summary>
 	internal static void SearchFolder(string path, string fileSpec, IReadOnlyList<string> exclude, bool byExtension)
 	{
@@ -25,8 +26,8 @@ internal static class Searcher
 			Program.WriteMessage($"{files.Length} potential file(s) identified...", true);
 		}
 
-		// for each file
-		foreach (var file in files) {
+		// Use parallelism to process zip files on all cores
+		_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, file => {
 			try {
 				if (byExtension || ZipUtils.IsZipArchiveContent(file)) {
 					var zip = new ZipInternals(byExtension);
@@ -36,7 +37,7 @@ internal static class Searcher
 			catch {
 				Program.WriteMessage($"Error in zip: {file}");
 			}
-		}
+		});
 	}
 
 	/// <summary>
