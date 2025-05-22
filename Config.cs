@@ -4,7 +4,7 @@
 /// Configuration for the zipdir command line
 /// Folder is a string so the whole record has value semantics. A DirectoryInfo does not support value semantics.
 /// </summary>
-internal sealed record class ZipDirConfig(bool ByExtension, string Folder, string Pattern, IReadOnlyList<string> Excludes, bool Raw)
+internal sealed record class ZipDirConfig(bool ByExtension, string Folder, string Pattern, IReadOnlyList<string> Excludes, bool Raw, bool SingleThread)
 {
 	/// <summary>
 	/// Manually implementing Equals so IReadOnlyList Excludes is compared by value
@@ -14,9 +14,10 @@ internal sealed record class ZipDirConfig(bool ByExtension, string Folder, strin
 		&& Folder == other.Folder
 		&& Pattern == other.Pattern
 		&& Excludes.SequenceEqual(other.Excludes)   // this is the reason we cant use default Equals
-		&& Raw == other.Raw;
+		&& Raw == other.Raw
+		&& SingleThread == other.SingleThread;
 
-	public override int GetHashCode() => HashCode.Combine(ByExtension, Folder, Pattern, Excludes.Count, Raw); // dont use Combine(.., Excludes, ..) because it doesnt work!
+	public override int GetHashCode() => HashCode.Combine(ByExtension, Folder, Pattern, Excludes.Count, Raw, SingleThread); // dont use Combine(.., Excludes, ..) because it doesnt work!
 }
 
 /// <summary>

@@ -27,11 +27,16 @@ internal static class Program
 
 			if (!raw) {
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
+				if (parsed.SingleThread) {
+					Console.WriteLine("Single thread mode");
+				} else {
+					Console.WriteLine("Multi-thread mode");
+				}
 			}
 
 			var str = parsed.ByExtension ? "extension" : "magic number";
 			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}, searching by {str}", true);
-			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes, parsed.ByExtension);
+			Searcher.SearchFolder(parsed.Folder, parsed.Pattern, parsed.Excludes, parsed.ByExtension, parsed.SingleThread);
 			return 0;
 		}
 		catch (HelpException) {
@@ -65,6 +70,7 @@ internal static class Program
 
 		// parse the rest of the command line
 		var raw = pico.Contains("-r", "--raw");
+		var singleThread = pico.Contains("-s", "--single-thread");
 		var byExtension = !pico.Contains("-b", "--byte");
 		var folder = Searcher.NormalizeFolder(pico.GetParamOpt("-f", "--folder") ?? ".");
 		var pattern = pico.GetParamOpt("-p", "--pattern");
@@ -75,7 +81,7 @@ internal static class Program
 		// when searching by magic number, the default should be *
 		pattern ??= byExtension ? "*.zip" : "*";
 
-		return new ZipDirConfig(byExtension, folder, pattern, excludes, raw);
+		return new ZipDirConfig(byExtension, folder, pattern, excludes, raw, singleThread);
 	}
 
 	/// <summary>
@@ -100,6 +106,7 @@ internal static class Program
             -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
             -b, --byte            Identify zip files by magic number, not extension
             -r, --raw             Raw output, for piping
+            -s, --single-thread   Use a single thread for processing
             -h, --help, -?        Help information
 
           Example:

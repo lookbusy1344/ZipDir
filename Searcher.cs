@@ -9,7 +9,7 @@ internal static class Searcher
 	/// <summary>
 	/// Find all .zip files in this folder, and list their contents (multi-threaded)
 	/// </summary>
-	internal static void SearchFolder(string path, string fileSpec, IReadOnlyList<string> exclude, bool byExtension)
+	internal static void SearchFolder(string path, string fileSpec, IReadOnlyList<string> exclude, bool byExtension, bool singleThread)
 	{
 		var allFiles = Directory.GetFiles(path, fileSpec, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
 
@@ -26,8 +26,10 @@ internal static class Searcher
 			Program.WriteMessage($"{files.Length} potential file(s) identified...", true);
 		}
 
-		// Use parallelism to process zip files on all cores
-		_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, file => {
+		var parallelism = singleThread ? 1 : Environment.ProcessorCount;
+
+		// Use parallelism to process zip files on specified number of cores
+		_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelism }, file => {
 			try {
 				if (byExtension || ZipUtils.IsZipArchiveContent(file)) {
 					var zip = new ZipInternals(byExtension);
