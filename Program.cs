@@ -27,11 +27,7 @@ internal static class Program
 
 			if (!raw) {
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
-				if (parsed.SingleThread) {
-					Console.WriteLine("Single thread mode");
-				} else {
-					Console.WriteLine("Multi-thread mode");
-				}
+				Console.WriteLine(parsed.SingleThread ? "Single thread mode" : "Multi-thread mode");
 			}
 
 			var str = parsed.ByExtension ? "extension" : "magic number";
@@ -63,13 +59,13 @@ internal static class Program
 
 		var help = pico.Contains("-h", "-?", "--help");
 		if (help) {
-			// if we want help, just bail here. Supress the warning about not using other parameters
+			// if we want help, just bail here. Suppress the warning about not using other parameters
 			pico.SuppressCheck = true;
 			throw new HelpException();
 		}
 
 		// parse the rest of the command line
-		var raw = pico.Contains("-r", "--raw");
+		var rawOutput = pico.Contains("-r", "--raw");
 		var singleThread = pico.Contains("-s", "--single-thread");
 		var byExtension = !pico.Contains("-b", "--byte");
 		var folder = Searcher.NormalizeFolder(pico.GetParamOpt("-f", "--folder") ?? ".");
@@ -81,7 +77,7 @@ internal static class Program
 		// when searching by magic number, the default should be *
 		pattern ??= byExtension ? "*.zip" : "*";
 
-		return new ZipDirConfig(byExtension, folder, pattern, excludes, raw, singleThread);
+		return new ZipDirConfig(byExtension, folder, pattern, excludes, rawOutput, singleThread);
 	}
 
 	/// <summary>
