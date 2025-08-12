@@ -32,14 +32,18 @@ Example:
   ZipDir.exe --folder \your\docs --pattern *.zip --exclude backup --exclude documents
 ```
 
-## Build
+## Build project for deployment
 
-ZipDir is written in C# and built with .NET 9. Build with
+Build on Windows x64:
 
 ```
 dotnet publish ZipDir.csproj -r win-x64 -c Release
 ```
 
-Or use the supplied `build.cmd` file.
+And on MacOS (Apple Silicon):
 
-The csprog file is configured for Native AOT compilation, but this is optional.
+```
+dotnet publish ZipDir.csproj -r osx-arm64 -c Release --self-contained true
+```
+
+The csproj file is configured for Native AOT compilation, but this is optional.
