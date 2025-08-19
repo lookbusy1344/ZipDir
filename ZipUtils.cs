@@ -13,7 +13,8 @@ internal static class ZipUtils
 	/// <summary>
 	/// Is this a zip file? Check the extension
 	/// </summary>
-	internal static bool IsZipArchiveFilename(string filename) => filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
+	internal static bool IsZipArchiveFilename(string filename) =>
+		filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Does this entry represent a nested zip file? Check the extension
@@ -69,7 +70,7 @@ internal static class ZipUtils
 	/// </summary>
 	private static bool CheckZipStream(Stream stream)
 	{
-		Span<byte> contents = stackalloc byte[MagicNumberZip.Length];   // avoid heap allocation
+		Span<byte> contents = stackalloc byte[MagicNumberZip.Length]; // avoid heap allocation
 		return stream.Read(contents) >= MagicNumberZip.Length && contents.SequenceEqual(MagicNumberZip);
 	}
 }

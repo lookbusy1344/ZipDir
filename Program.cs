@@ -8,7 +8,7 @@ using PicoArgs_dotnet;
  *	\path\to\zip1.zip/nested.zip/path/to/file.txt
  *	..where
  *	[\path\to\zip1.zip] [/nested.zip/path/to/file.txt]
- *	
+ *
  *	Physical files use backslash, zip entries use forward slash
  */
 
@@ -23,7 +23,7 @@ internal static class Program
 		try {
 			var parsed = ParseCommandLine(args);
 
-			Program.raw = parsed.Raw;
+			raw = parsed.Raw;
 
 			if (!raw) {
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
@@ -77,7 +77,7 @@ internal static class Program
 		// when searching by magic number, the default should be *
 		pattern ??= byExtension ? "*.zip" : "*";
 
-		return new ZipDirConfig(byExtension, folder, pattern, excludes, rawOutput, singleThread);
+		return new(byExtension, folder, pattern, excludes, rawOutput, singleThread);
 	}
 
 	/// <summary>
@@ -94,19 +94,19 @@ internal static class Program
 	}
 
 	private const string CommandLineMessage = """
-          Usage: ZipDir.exe [options]
-          
-          Options:
-            -f, --folder <path>   Folder to search (default ".")
-            -p, --pattern <str>   Zip file pattern (default "*.zip")
-            -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
-            -b, --byte            Identify zip files by magic number, not extension
-            -r, --raw             Raw output, for piping
-            -s, --single-thread   Use a single thread for processing
-            -h, --help, -?        Help information
+	                                          Usage: ZipDir.exe [options]
 
-          Example:
-            ZipDir.exe -f .
-            ZipDir.exe --folder \your\docs --pattern *.zip --exclude backup --exclude documents
-          """;
+	                                          Options:
+	                                            -f, --folder <path>   Folder to search (default ".")
+	                                            -p, --pattern <str>   Zip file pattern (default "*.zip")
+	                                            -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
+	                                            -b, --byte            Identify zip files by magic number, not extension
+	                                            -r, --raw             Raw output, for piping
+	                                            -s, --single-thread   Use a single thread for processing
+	                                            -h, --help, -?        Help information
+
+	                                          Example:
+	                                            ZipDir.exe -f .
+	                                            ZipDir.exe --folder \your\docs --pattern *.zip --exclude backup --exclude documents
+	                                          """;
 }

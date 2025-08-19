@@ -11,13 +11,19 @@ internal static class Searcher
 	/// </summary>
 	internal static void SearchFolder(ZipDirConfig config)
 	{
-		var allFiles = Directory.GetFiles(config.Folder, config.Pattern, new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
+		var allFiles = Directory.GetFiles(config.Folder, config.Pattern,
+			new EnumerationOptions {
+				IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive
+			});
 
 		// filter out any files that match the exclude pattern. This is a micro-optimization
 		var files = config.Excludes.Count switch {
 			0 => allFiles,
 			1 => [.. allFiles.Where(file => !file.Contains(config.Excludes[0], StringComparison.OrdinalIgnoreCase))],
-			_ => [.. allFiles.Where(file => !config.Excludes.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))]
+			_ => [
+				.. allFiles.Where(file =>
+					!config.Excludes.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))
+			]
 		};
 
 		if (config.ByExtension) {
@@ -29,7 +35,7 @@ internal static class Searcher
 		var parallelism = config.SingleThread ? 1 : Environment.ProcessorCount;
 
 		// Use parallelism to process zip files on specified number of cores
-		_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelism }, file => {
+		_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = parallelism }, file => {
 			try {
 				if (config.ByExtension || ZipUtils.IsZipArchiveContent(file)) {
 					var zip = new ZipInternals(config.ByExtension);
@@ -81,7 +87,7 @@ internal sealed class ZipInternals(bool byExtension = true)
 				try {
 					using var nestedStream = nestedEntry.Open();
 #pragma warning disable CA2000 // Dispose objects before losing scope - THIS SEEMS TO BE A BUG IN .NET 8
-					using var nestedArchive = new ZipArchive(nestedStream, ZipArchiveMode.Read, leaveOpen: true);
+					using var nestedArchive = new ZipArchive(nestedStream, ZipArchiveMode.Read, true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
 					RecursiveArchiveCheck(nestedZipName, nestedArchive, token);
@@ -89,7 +95,8 @@ internal sealed class ZipInternals(bool byExtension = true)
 				catch {
 					Program.WriteMessage($"Error in nested zip: {nestedZipName}");
 				}
-			} else if (nestedEntry.FullName[^1] is not ('/' or '\\')) { // check the last character, so we can ignore folders
+			} else if (nestedEntry.FullName[^1] is not ('/' or '\\')) {
+				// check the last character, so we can ignore folders
 				Console.WriteLine(ZipUtils.EntryFilename(containerName, nestedEntry));
 			}
 		}
@@ -99,5 +106,6 @@ internal sealed class ZipInternals(bool byExtension = true)
 	/// Check this file according to extension, or according to content
 	/// </summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private bool IsZipArchive(ZipArchiveEntry archive) => byExtension ? ZipUtils.IsZipArchiveFilename(archive) : ZipUtils.IsZipArchiveContent(archive);
+	private bool IsZipArchive(ZipArchiveEntry archive) =>
+		byExtension ? ZipUtils.IsZipArchiveFilename(archive) : ZipUtils.IsZipArchiveContent(archive);
 }
