@@ -26,13 +26,9 @@ internal static class ZipUtils
 	/// </summary>
 	internal static string EntryFilename(string containerName, ZipArchiveEntry entry)
 	{
-		if (entry.FullName.Contains('\\')) {
-			// path separator is '\', so replace with '/' for consistency
-			var s = entry.FullName.Replace('\\', '/');
-			return $"{containerName}/{s}";
-		}
-
-		return $"{containerName}/{entry.FullName}";
+		// Always normalize path separators to forward slash for consistency
+		var normalizedPath = entry.FullName.Replace('\\', '/');
+		return $"{containerName}/{normalizedPath}";
 	}
 
 	/// <summary>
