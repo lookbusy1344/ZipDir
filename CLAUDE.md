@@ -36,7 +36,7 @@ dotnet list package --vulnerable --include-transitive
 ### Code Style and Analysis
 ```bash
 # Format code according to .editorconfig rules (run after making changes)
-dotnet format
+dotnet format ZipDir.csproj
 ```
 
 The project enforces strict code analysis with Roslynator and other analyzers. All analysis modes are enabled:
