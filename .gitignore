@@ -1,5 +1,5 @@
-/bin/
-/obj/
-/.vs/
-/*.csproj.user
+bin/
+obj/
+.vs/
+*.csproj.user
 .DS_Store
