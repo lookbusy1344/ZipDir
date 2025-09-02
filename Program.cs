@@ -1,4 +1,4 @@
-﻿namespace ZipDir;
+namespace ZipDir;
 
 using PicoArgs_dotnet;
 
@@ -14,8 +14,6 @@ using PicoArgs_dotnet;
 
 internal static class Program
 {
-	private static bool raw;
-
 	private static int Main(string[] args)
 	{
 		var ver = GitVersion.VersionInfo.Get();
@@ -23,15 +21,13 @@ internal static class Program
 		try {
 			var parsed = ParseCommandLine(args);
 
-			raw = parsed.Raw;
-
-			if (!raw) {
+			if (!parsed.Raw) {
 				Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 				Console.WriteLine(parsed.SingleThread ? "Single thread mode" : "Multi-thread mode");
 			}
 
 			var str = parsed.ByExtension ? "extension" : "magic number";
-			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}, searching by {str}", true);
+			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}, searching by {str}", parsed.Raw, true);
 			Searcher.SearchFolder(parsed);
 			return 0;
 		}
@@ -81,9 +77,9 @@ internal static class Program
 	}
 
 	/// <summary>
-	/// Display helpful message is not in --raw mode
+	/// Display helpful message if not in --raw mode
 	/// </summary>
-	internal static void WriteMessage(string msg, bool blankLine = false)
+	internal static void WriteMessage(string msg, bool raw = false, bool blankLine = false)
 	{
 		if (!raw) {
 			Console.WriteLine(msg);

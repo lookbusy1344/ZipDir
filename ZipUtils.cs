@@ -1,4 +1,4 @@
-﻿namespace ZipDir;
+namespace ZipDir;
 
 using System.IO.Compression;
 
@@ -26,13 +26,9 @@ internal static class ZipUtils
 	/// </summary>
 	internal static string EntryFilename(string containerName, ZipArchiveEntry entry)
 	{
-		if (entry.FullName.Contains('\\')) {
-			// path separator is '\', so replace with '/' for consistency
-			var s = entry.FullName.Replace('\\', '/');
-			return $"{containerName}/{s}";
-		}
-
-		return $"{containerName}/{entry.FullName}";
+		// Always normalize path separators to forward slash for consistency
+		var normalizedPath = entry.FullName.Replace('\\', '/');
+		return $"{containerName}/{normalizedPath}";
 	}
 
 	/// <summary>
@@ -44,8 +40,20 @@ internal static class ZipUtils
 			using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 			return CheckZipStream(fileStream);
 		}
-		catch (Exception) {
-			// some error in the zip file
+		catch (UnauthorizedAccessException) {
+			// Access denied to file
+			return false;
+		}
+		catch (FileNotFoundException) {
+			// File doesn't exist
+			return false;
+		}
+		catch (DirectoryNotFoundException) {
+			// Directory doesn't exist
+			return false;
+		}
+		catch (IOException) {
+			// File in use or other IO error
 			return false;
 		}
 	}
@@ -59,8 +67,16 @@ internal static class ZipUtils
 			using var entryStream = entry.Open();
 			return CheckZipStream(entryStream);
 		}
-		catch (Exception) {
-			// some error in the zip file
+		catch (InvalidDataException) {
+			// Corrupted zip entry
+			return false;
+		}
+		catch (NotSupportedException) {
+			// Unsupported compression method
+			return false;
+		}
+		catch (IOException) {
+			// Stream read error
 			return false;
 		}
 	}

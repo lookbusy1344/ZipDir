@@ -1,4 +1,4 @@
-﻿namespace ZipDir;
+namespace ZipDir;
 
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
@@ -12,24 +12,19 @@ internal static class Searcher
 	internal static void SearchFolder(ZipDirConfig config)
 	{
 		var allFiles = Directory.GetFiles(config.Folder, config.Pattern,
-			new EnumerationOptions {
-				IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive
-			});
+			new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
 
-		// filter out any files that match the exclude pattern. This is a micro-optimization
+		// filter out any files that match the exclude pattern using proper glob matching
 		var files = config.Excludes.Count switch {
 			0 => allFiles,
-			1 => [.. allFiles.Where(file => !file.Contains(config.Excludes[0], StringComparison.OrdinalIgnoreCase))],
-			_ => [
-				.. allFiles.Where(file =>
-					!config.Excludes.Any(toExclude => file.Contains(toExclude, StringComparison.OrdinalIgnoreCase)))
-			]
+			1 => [.. allFiles.Where(file => !FileMatchesPattern(file, config.Excludes[0]))],
+			_ => [.. allFiles.Where(file => !config.Excludes.Any(pattern => FileMatchesPattern(file, pattern)))]
 		};
 
 		if (config.ByExtension) {
-			Program.WriteMessage($"{files.Length} zip file(s) identified...", true);
+			Program.WriteMessage($"{files.Length} zip file(s) identified...", config.Raw, true);
 		} else {
-			Program.WriteMessage($"{files.Length} potential file(s) identified...", true);
+			Program.WriteMessage($"{files.Length} potential file(s) identified...", config.Raw, true);
 		}
 
 		var parallelism = config.SingleThread ? 1 : Environment.ProcessorCount;
@@ -38,12 +33,12 @@ internal static class Searcher
 		_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = parallelism }, file => {
 			try {
 				if (config.ByExtension || ZipUtils.IsZipArchiveContent(file)) {
-					var zip = new ZipInternals(config.ByExtension);
+					var zip = new ZipInternals(config.ByExtension, config.Raw);
 					zip.CheckZipFile(file);
 				}
 			}
-			catch {
-				Program.WriteMessage($"Error in zip: {file}");
+			catch (Exception ex) {
+				Program.WriteMessage($"Error in zip: {file} - {ex.Message}", config.Raw);
 			}
 		});
 	}
@@ -56,9 +51,28 @@ internal static class Searcher
 		var dirinfo = new DirectoryInfo(folderName);
 		return dirinfo.FullName;
 	}
+
+	/// <summary>
+	/// Check if a file path matches an exclusion pattern (supports simple wildcards)
+	/// </summary>
+	private static bool FileMatchesPattern(string filePath, string pattern)
+	{
+		// Simple pattern matching - if pattern contains wildcards, use proper matching
+		if (pattern.Contains('*') || pattern.Contains('?')) {
+			// Convert simple glob pattern to regex for basic wildcard support
+			var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
+				.Replace(@"\*", ".*")
+				.Replace(@"\?", ".") + "$";
+			return System.Text.RegularExpressions.Regex.IsMatch(filePath, regexPattern,
+				System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+		}
+
+		// Fallback to simple substring matching for non-wildcard patterns
+		return filePath.Contains(pattern, StringComparison.OrdinalIgnoreCase);
+	}
 }
 
-internal sealed class ZipInternals(bool byExtension = true)
+internal sealed class ZipInternals(bool byExtension = true, bool raw = false)
 {
 	/// <summary>
 	/// Wrapper around zip search to handle nested zips
@@ -92,8 +106,8 @@ internal sealed class ZipInternals(bool byExtension = true)
 
 					RecursiveArchiveCheck(nestedZipName, nestedArchive, token);
 				}
-				catch {
-					Program.WriteMessage($"Error in nested zip: {nestedZipName}");
+				catch (Exception ex) {
+					Program.WriteMessage($"Error in nested zip: {nestedZipName} - {ex.Message}", raw);
 				}
 			} else if (nestedEntry.FullName[^1] is not ('/' or '\\')) {
 				// check the last character, so we can ignore folders

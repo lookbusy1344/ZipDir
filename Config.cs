@@ -1,4 +1,4 @@
-﻿namespace ZipDir;
+namespace ZipDir;
 
 /// <summary>
 /// Configuration for the zipdir command line
@@ -24,9 +24,22 @@ internal sealed record class ZipDirConfig(
 	                                           && Raw == other.Raw
 	                                           && SingleThread == other.SingleThread;
 
-	public override int GetHashCode() =>
-		HashCode.Combine(ByExtension, Folder, Pattern, Excludes.Count, Raw,
-			SingleThread); // dont use Combine(.., Excludes, ..) because it doesnt work!
+	public override int GetHashCode()
+	{
+		var hash = new HashCode();
+		hash.Add(ByExtension);
+		hash.Add(Folder);
+		hash.Add(Pattern);
+		hash.Add(Raw);
+		hash.Add(SingleThread);
+
+		// Hash each exclude pattern individually for better distribution
+		foreach (var exclude in Excludes) {
+			hash.Add(exclude);
+		}
+
+		return hash.ToHashCode();
+	}
 }
 
 /// <summary>
