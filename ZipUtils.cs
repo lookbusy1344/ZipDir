@@ -44,8 +44,20 @@ internal static class ZipUtils
 			using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 			return CheckZipStream(fileStream);
 		}
-		catch (Exception) {
-			// some error in the zip file
+		catch (UnauthorizedAccessException) {
+			// Access denied to file
+			return false;
+		}
+		catch (FileNotFoundException) {
+			// File doesn't exist
+			return false;
+		}
+		catch (DirectoryNotFoundException) {
+			// Directory doesn't exist
+			return false;
+		}
+		catch (IOException) {
+			// File in use or other IO error
 			return false;
 		}
 	}
@@ -59,8 +71,16 @@ internal static class ZipUtils
 			using var entryStream = entry.Open();
 			return CheckZipStream(entryStream);
 		}
-		catch (Exception) {
-			// some error in the zip file
+		catch (InvalidDataException) {
+			// Corrupted zip entry
+			return false;
+		}
+		catch (NotSupportedException) {
+			// Unsupported compression method
+			return false;
+		}
+		catch (IOException) {
+			// Stream read error
 			return false;
 		}
 	}
