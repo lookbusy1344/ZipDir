@@ -12,11 +12,7 @@ internal static class Searcher
 	internal static void SearchFolder(ZipDirConfig config)
 	{
 		var allFiles = Directory.GetFiles(config.Folder, config.Pattern,
-			new EnumerationOptions {
-				IgnoreInaccessible = true,
-				RecurseSubdirectories = true,
-				MatchCasing = MatchCasing.CaseInsensitive
-			});
+			new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive });
 
 		// filter out any files that match the exclude pattern using proper glob matching
 		var files = config.Excludes.Count switch {

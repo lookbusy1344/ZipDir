@@ -14,7 +14,6 @@ using PicoArgs_dotnet;
 
 internal static class Program
 {
-
 	private static int Main(string[] args)
 	{
 		var ver = GitVersion.VersionInfo.Get();
