@@ -24,9 +24,9 @@ internal static class Searcher
 		};
 
 		if (config.ByExtension) {
-			Program.WriteMessage($"{files.Length} zip file(s) identified...", true);
+			Program.WriteMessage($"{files.Length} zip file(s) identified...", config.Raw, true);
 		} else {
-			Program.WriteMessage($"{files.Length} potential file(s) identified...", true);
+			Program.WriteMessage($"{files.Length} potential file(s) identified...", config.Raw, true);
 		}
 
 		var parallelism = config.SingleThread ? 1 : Environment.ProcessorCount;
@@ -35,12 +35,12 @@ internal static class Searcher
 		_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = parallelism }, file => {
 			try {
 				if (config.ByExtension || ZipUtils.IsZipArchiveContent(file)) {
-					var zip = new ZipInternals(config.ByExtension);
+					var zip = new ZipInternals(config.ByExtension, config.Raw);
 					zip.CheckZipFile(file);
 				}
 			}
 			catch (Exception ex) {
-				Program.WriteMessage($"Error in zip: {file} - {ex.Message}");
+				Program.WriteMessage($"Error in zip: {file} - {ex.Message}", config.Raw);
 			}
 		});
 	}
@@ -74,7 +74,7 @@ internal static class Searcher
 	}
 }
 
-internal sealed class ZipInternals(bool byExtension = true)
+internal sealed class ZipInternals(bool byExtension = true, bool raw = false)
 {
 	/// <summary>
 	/// Wrapper around zip search to handle nested zips
@@ -109,7 +109,7 @@ internal sealed class ZipInternals(bool byExtension = true)
 					RecursiveArchiveCheck(nestedZipName, nestedArchive, token);
 				}
 				catch (Exception ex) {
-					Program.WriteMessage($"Error in nested zip: {nestedZipName} - {ex.Message}");
+					Program.WriteMessage($"Error in nested zip: {nestedZipName} - {ex.Message}", raw);
 				}
 			} else if (nestedEntry.FullName[^1] is not ('/' or '\\')) {
 				// check the last character, so we can ignore folders
