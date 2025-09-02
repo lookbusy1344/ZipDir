@@ -112,6 +112,7 @@ public class ZipDirTests
 			Console.WriteLine($"Error output: {error}");
 			Console.WriteLine($"Standard output: {output}");
 		}
+
 		Assert.Equal(0, process.ExitCode);
 		Assert.Empty(error);
 
@@ -153,6 +154,7 @@ public class ZipDirTests
 			Console.WriteLine($"Error output: {error}");
 			Console.WriteLine($"Standard output: {output}");
 		}
+
 		Assert.Equal(0, process.ExitCode);
 		Assert.Empty(error);
 
