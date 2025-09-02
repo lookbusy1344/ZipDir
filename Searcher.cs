@@ -42,8 +42,8 @@ internal static class Searcher
 					zip.CheckZipFile(file);
 				}
 			}
-			catch {
-				Program.WriteMessage($"Error in zip: {file}");
+			catch (Exception ex) {
+				Program.WriteMessage($"Error in zip: {file} - {ex.Message}");
 			}
 		});
 	}
@@ -92,8 +92,8 @@ internal sealed class ZipInternals(bool byExtension = true)
 
 					RecursiveArchiveCheck(nestedZipName, nestedArchive, token);
 				}
-				catch {
-					Program.WriteMessage($"Error in nested zip: {nestedZipName}");
+				catch (Exception ex) {
+					Program.WriteMessage($"Error in nested zip: {nestedZipName} - {ex.Message}");
 				}
 			} else if (nestedEntry.FullName[^1] is not ('/' or '\\')) {
 				// check the last character, so we can ignore folders
