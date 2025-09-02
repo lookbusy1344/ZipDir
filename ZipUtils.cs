@@ -1,4 +1,4 @@
-﻿namespace ZipDir;
+namespace ZipDir;
 
 using System.IO.Compression;
 

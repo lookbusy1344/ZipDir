@@ -1,4 +1,4 @@
-﻿namespace ZipDir;
+namespace ZipDir;
 
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
@@ -13,7 +13,9 @@ internal static class Searcher
 	{
 		var allFiles = Directory.GetFiles(config.Folder, config.Pattern,
 			new EnumerationOptions {
-				IgnoreInaccessible = true, RecurseSubdirectories = true, MatchCasing = MatchCasing.CaseInsensitive
+				IgnoreInaccessible = true,
+				RecurseSubdirectories = true,
+				MatchCasing = MatchCasing.CaseInsensitive
 			});
 
 		// filter out any files that match the exclude pattern using proper glob matching
@@ -65,10 +67,10 @@ internal static class Searcher
 			var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
 				.Replace(@"\*", ".*")
 				.Replace(@"\?", ".") + "$";
-			return System.Text.RegularExpressions.Regex.IsMatch(filePath, regexPattern, 
+			return System.Text.RegularExpressions.Regex.IsMatch(filePath, regexPattern,
 				System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 		}
-		
+
 		// Fallback to simple substring matching for non-wildcard patterns
 		return filePath.Contains(pattern, StringComparison.OrdinalIgnoreCase);
 	}

@@ -1,4 +1,4 @@
-﻿namespace ZipDir;
+namespace ZipDir;
 
 /// <summary>
 /// Configuration for the zipdir command line
@@ -16,13 +16,13 @@ internal sealed record class ZipDirConfig(
 	/// Manually implementing Equals so IReadOnlyList Excludes is compared by value
 	/// </summary>
 	public bool Equals(ZipDirConfig? other) => other != null
-	                                           && ByExtension == other.ByExtension
-	                                           && Folder == other.Folder
-	                                           && Pattern == other.Pattern
-	                                           && Excludes.SequenceEqual(other
-		                                           .Excludes) // this is the reason we cant use default Equals
-	                                           && Raw == other.Raw
-	                                           && SingleThread == other.SingleThread;
+											   && ByExtension == other.ByExtension
+											   && Folder == other.Folder
+											   && Pattern == other.Pattern
+											   && Excludes.SequenceEqual(other
+												   .Excludes) // this is the reason we cant use default Equals
+											   && Raw == other.Raw
+											   && SingleThread == other.SingleThread;
 
 	public override int GetHashCode()
 	{
@@ -32,12 +32,12 @@ internal sealed record class ZipDirConfig(
 		hash.Add(Pattern);
 		hash.Add(Raw);
 		hash.Add(SingleThread);
-		
+
 		// Hash each exclude pattern individually for better distribution
 		foreach (var exclude in Excludes) {
 			hash.Add(exclude);
 		}
-		
+
 		return hash.ToHashCode();
 	}
 }
