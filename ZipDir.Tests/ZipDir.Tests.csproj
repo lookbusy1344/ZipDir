@@ -18,5 +18,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ZipDir.csproj" />
+  </ItemGroup>
+
 
 </Project>
