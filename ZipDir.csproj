@@ -42,4 +42,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="ZipDir.Tests/**" />
+    <None Remove="ZipDir.Tests/**" />
+  </ItemGroup>
+
 </Project>

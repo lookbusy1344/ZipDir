@@ -33,6 +33,12 @@ dotnet restore
 dotnet list package --vulnerable --include-transitive
 ```
 
+### Testing
+```bash
+# Run automated tests
+dotnet test
+```
+
 ### Code Style and Analysis
 ```bash
 # Format code according to .editorconfig rules (run after making changes)
