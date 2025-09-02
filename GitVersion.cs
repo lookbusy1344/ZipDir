@@ -63,7 +63,7 @@ public class VersionInfo
 		var items = verinfo.InformationalVersion.Split('+', 2);
 		var version = items[0];
 		var hash = items.Length > 1 ? items[1] : string.Empty;
-		var modified = hash[^1] == '+';
+		var modified = !string.IsNullOrEmpty(hash) && hash[^1] == '+';
 
 		return new() { Version = version, GitHash = hash, GitModified = modified };
 	}
