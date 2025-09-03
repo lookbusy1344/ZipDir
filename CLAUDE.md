@@ -72,8 +72,8 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 ### Code Conventions
 - Uses file-scoped namespaces
 - Comprehensive .editorconfig with strict formatting rules
-- Tab indentation (4 spaces)
-- CRLF line endings
+- Tab character indentation for CS files
+- CRLF line endings for CS files. Other files like markdown use LF.
 - Braces on same line for control blocks, new line for methods/types
 - Extensive analyzer rules configured in .editorconfig
 
@@ -84,6 +84,6 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 
 ## Project Structure
 - Single executable project targeting .NET 9.0
-- No test projects (tests should be added if implementing new features)
+- Unit test project (ZipDir.Tests) with comprehensive test coverage
 - Uses record types for configuration with value semantics
 - Implements custom equality for collections in records
