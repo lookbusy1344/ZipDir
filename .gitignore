@@ -3,3 +3,4 @@ obj/
 .vs/
 *.csproj.user
 .DS_Store
+/ZipDir.sln.DotSettings.user
