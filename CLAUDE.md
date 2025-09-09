@@ -17,13 +17,13 @@ dotnet clean --verbosity minimal
 dotnet build
 
 # Publish for Windows x64
-dotnet publish ZipDir.csproj -r win-x64 -c Release
+dotnet publish ZipDir.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 
 # Publish for macOS Apple Silicon
-dotnet publish ZipDir.csproj -r osx-arm64 -c Release --self-contained true
+dotnet publish ZipDir.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 
 # Publish for Windows ARM64
-dotnet publish ZipDir.csproj -r win-arm64 -c Release
+dotnet publish ZipDir.csproj -c Release -r win-arm64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 ```
 
 ### Security and Analysis

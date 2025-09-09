@@ -37,13 +37,12 @@ Example:
 Build on Windows x64:
 
 ```
-dotnet publish ZipDir.csproj -r win-x64 -c Release
+dotnet publish ZipDir.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 ```
 
 And on MacOS (Apple Silicon):
 
 ```
-dotnet publish ZipDir.csproj -r osx-arm64 -c Release --self-contained true
-```
+dotnet publish ZipDir.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 
-The csproj file is configured for Native AOT compilation, but this is optional.
+```

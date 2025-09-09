@@ -7,13 +7,12 @@
 </Target>
 
   <PropertyGroup>
-	<Version>2.1.0.0</Version> 
-	<InformationalVersion>$(SourceRevisionId)</InformationalVersion> 
+	<Version>2.1.0.0</Version>
+	<InformationalVersion>$(SourceRevisionId)</InformationalVersion>
 	<OutputType>Exe</OutputType>
 	<TargetFramework>net9.0</TargetFramework>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -24,7 +23,7 @@
 	<AnalysisModeReliability>All</AnalysisModeReliability>
 	<AnalysisModeUsage>All</AnalysisModeUsage>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="lookbusy1344.RecordValueAnalyser" Version="1.2.2">
       <PrivateAssets>all</PrivateAssets>
