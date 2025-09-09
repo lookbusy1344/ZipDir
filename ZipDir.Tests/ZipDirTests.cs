@@ -1,10 +1,14 @@
 using System.Diagnostics;
-using System.Text;
+using Xunit.Abstractions;
 
 namespace ZipDir.Tests;
 
 public class ZipDirTests
 {
+	private readonly ITestOutputHelper testOutputHelper;
+
+	public ZipDirTests(ITestOutputHelper testOutputHelper) => this.testOutputHelper = testOutputHelper;
+
 	[Fact]
 	public void ProcessTestsFolder_ShouldReturnExpectedFiles()
 	{
@@ -108,9 +112,9 @@ public class ZipDirTests
 
 		// Assert
 		if (process.ExitCode != 0) {
-			Console.WriteLine($"Exit code: {process.ExitCode}");
-			Console.WriteLine($"Error output: {error}");
-			Console.WriteLine($"Standard output: {output}");
+			testOutputHelper.WriteLine($"Exit code: {process.ExitCode}");
+			testOutputHelper.WriteLine($"Error output: {error}");
+			testOutputHelper.WriteLine($"Standard output: {output}");
 		}
 
 		Assert.Equal(0, process.ExitCode);
@@ -150,9 +154,9 @@ public class ZipDirTests
 
 		// Assert
 		if (process.ExitCode != 0) {
-			Console.WriteLine($"Exit code: {process.ExitCode}");
-			Console.WriteLine($"Error output: {error}");
-			Console.WriteLine($"Standard output: {output}");
+			testOutputHelper.WriteLine($"Exit code: {process.ExitCode}");
+			testOutputHelper.WriteLine($"Error output: {error}");
+			testOutputHelper.WriteLine($"Standard output: {output}");
 		}
 
 		Assert.Equal(0, process.ExitCode);
