@@ -16,13 +16,13 @@ internal sealed record class ZipDirConfig(
 	/// Manually implementing Equals so IReadOnlyList Excludes is compared by value
 	/// </summary>
 	public bool Equals(ZipDirConfig? other) => other != null
-	                                           && ByExtension == other.ByExtension
-	                                           && Folder == other.Folder
-	                                           && Pattern == other.Pattern
-	                                           && Excludes.SequenceEqual(other
-		                                           .Excludes) // this is the reason we cant use default Equals
-	                                           && Raw == other.Raw
-	                                           && SingleThread == other.SingleThread;
+											   && ByExtension == other.ByExtension
+											   && Folder == other.Folder
+											   && Pattern == other.Pattern
+											   && Excludes.SequenceEqual(other
+												   .Excludes) // this is the reason we cant use default Equals
+											   && Raw == other.Raw
+											   && SingleThread == other.SingleThread;
 
 	public override int GetHashCode()
 	{
