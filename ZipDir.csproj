@@ -41,7 +41,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="9.0.8" />
-    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.8" />
+    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.9" />
     <Compile Remove="ZipDir.Tests/**" />
     <None Remove="ZipDir.Tests/**" />
   </ItemGroup>
