@@ -90,19 +90,19 @@ internal static class Program
 	}
 
 	private const string CommandLineMessage = """
-	                                          Usage: ZipDir.exe [options]
+											  Usage: ZipDir [options]
 
-	                                          Options:
-	                                            -f, --folder <path>   Folder to search (default ".")
-	                                            -p, --pattern <str>   Zip file pattern (default "*.zip")
-	                                            -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
-	                                            -b, --byte            Identify zip files by magic number, not extension
-	                                            -r, --raw             Raw output, for piping
-	                                            -s, --single-thread   Use a single thread for processing
-	                                            -h, --help, -?        Help information
+											  Options:
+											    -f, --folder <path>   Folder to search (default ".")
+											    -p, --pattern <str>   Zip file pattern (default "*.zip")
+											    -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
+											    -b, --byte            Identify zip files by magic number, not extension
+											    -r, --raw             Raw output, for piping
+											    -s, --single-thread   Use a single thread for processing
+											    -h, --help, -?        Help information
 
-	                                          Example:
-	                                            ZipDir.exe -f .
-	                                            ZipDir.exe --folder \your\docs --pattern *.zip --exclude backup --exclude documents
-	                                          """;
+											  Example:
+											    ZipDir -f .
+											    ZipDir --folder \your\docs --pattern *.zip --exclude backup --exclude documents
+											  """;
 }
