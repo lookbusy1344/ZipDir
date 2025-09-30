@@ -25,11 +25,20 @@ Options:
   -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
   -b, --byte            Identify zip files by magic number, not extension
   -r, --raw             Raw output, for piping
+  -s, --single-thread   Use a single thread for processing
   -h, --help, -?        Help information
 
 Example:
   ZipDir -f .
   ZipDir --folder \your\docs --pattern *.zip --exclude backup --exclude documents
+```
+
+## Testing
+
+The project includes comprehensive unit and integration tests:
+
+```
+dotnet test
 ```
 
 ## Build project for deployment
