@@ -83,6 +83,15 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R ./release-artifacts
 
+      - name: Generate SHA256 checksums
+        run: |
+          cd ./release-artifacts
+          sha256sum zipdir-win-x64/zipdir-win-x64.exe > SHA256SUMS
+          sha256sum zipdir-win-arm64/zipdir-win-arm64.exe >> SHA256SUMS
+          sha256sum zipdir-osx-arm64/zipdir-osx-arm64 >> SHA256SUMS
+          sha256sum zipdir-linux-x64/zipdir-linux-x64 >> SHA256SUMS
+          cat SHA256SUMS
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -91,6 +100,7 @@ jobs:
             ./release-artifacts/zipdir-win-arm64/zipdir-win-arm64.exe
             ./release-artifacts/zipdir-osx-arm64/zipdir-osx-arm64
             ./release-artifacts/zipdir-linux-x64/zipdir-linux-x64
+            ./release-artifacts/SHA256SUMS
           draft: false
           prerelease: false
           generate_release_notes: true
