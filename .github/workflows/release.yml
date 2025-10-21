@@ -1,0 +1,98 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build Release Binaries
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        include:
+          - runtime: win-x64
+            artifact-name: zipdir-win-x64
+            file-extension: .exe
+          - runtime: win-arm64
+            artifact-name: zipdir-win-arm64
+            file-extension: .exe
+          - runtime: osx-arm64
+            artifact-name: zipdir-osx-arm64
+            file-extension: ''
+          - runtime: linux-x64
+            artifact-name: zipdir-linux-x64
+            file-extension: ''
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore ZipDir.csproj
+
+      - name: Build and publish
+        run: |
+          dotnet publish ZipDir.csproj \
+            -c Release \
+            -r ${{ matrix.runtime }} \
+            -p:PublishSingleFile=true \
+            -p:PublishAot=false \
+            --self-contained false \
+            -o ./publish/${{ matrix.runtime }}
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p ./artifacts
+          cp ./publish/${{ matrix.runtime }}/ZipDir${{ matrix.file-extension }} ./artifacts/${{ matrix.artifact-name }}${{ matrix.file-extension }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ./artifacts/${{ matrix.artifact-name }}${{ matrix.file-extension }}
+          if-no-files-found: error
+
+  create-release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./release-artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R ./release-artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./release-artifacts/zipdir-win-x64/zipdir-win-x64.exe
+            ./release-artifacts/zipdir-win-arm64/zipdir-win-arm64.exe
+            ./release-artifacts/zipdir-osx-arm64/zipdir-osx-arm64
+            ./release-artifacts/zipdir-linux-x64/zipdir-linux-x64
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
