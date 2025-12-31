@@ -2,8 +2,7 @@
 
 [![CodeQL](https://github.com/lookbusy1344/ZipDir/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lookbusy1344/ZipDir/actions/workflows/github-code-scanning/codeql)
 
-A small command line utility to list the contents of ZIP files. Given a folder, it recursively searches for ZIP files and lists their contents. This
-includes nested ZIP files.
+A command-line utility built with .NET 10.0 that recursively searches for ZIP files in a directory and lists their contents, including nested ZIP files. The application uses Native AOT compilation for optimal performance.
 
 ```
 ZipDir -f C:\path
@@ -53,5 +52,22 @@ And on MacOS (Apple Silicon):
 
 ```
 dotnet publish ZipDir.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
-
 ```
+
+## Requirements
+
+- .NET 10.0 SDK or later
+
+**Version History:**
+- Commit `103da14899a389df367a327eab91594cb21d962a` and later: .NET 10.0 support
+- Earlier commits: .NET 9.0
+
+## Features
+
+- Multi-threaded and single-threaded processing modes
+- ZIP file detection by extension or magic number
+- Pattern-based file filtering
+- Exclude patterns support
+- Raw output mode for piping to other tools
+- Comprehensive test coverage with 27+ unit and integration tests
+- Strict code analysis with Roslynator and multiple analyzers

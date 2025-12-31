@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ZipDir is a command-line utility that recursively searches for ZIP files in a directory and lists their contents, including nested ZIP files. The application is built with .NET 9.0 and uses Native AOT compilation for performance.
+ZipDir is a command-line utility that recursively searches for ZIP files in a directory and lists their contents, including nested ZIP files. The application is built with .NET 10.0 and uses Native AOT compilation for performance.
 
 ## Development Commands
 
@@ -35,9 +35,17 @@ dotnet list package --vulnerable --include-transitive
 
 ### Testing
 ```bash
-# Run automated tests
+# Run automated tests (27 tests as of current version)
 dotnet test
 ```
+
+**Current Test Status:** 27 passing unit and integration tests covering:
+- ZIP file detection (by extension and magic number)
+- Nested ZIP processing
+- Pattern matching and exclusion
+- Multi-threaded and single-threaded modes
+- Raw output formatting
+- Configuration validation
 
 ### Code Style and Analysis
 ```bash
@@ -84,7 +92,17 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 - **Multiple analyzers**: Roslynator, RecordValueAnalyser, Threading analyzers
 
 ## Project Structure
-- Single executable project targeting .NET 9.0
-- Unit test project (ZipDir.Tests) with comprehensive test coverage
+- Single executable project targeting .NET 10.0
+- Unit test project (ZipDir.Tests) with comprehensive test coverage (27 tests)
 - Uses record types for configuration with value semantics
 - Implements custom equality for collections in records
+
+## Current Package Versions
+- Microsoft.DotNet.ILCompiler: 10.0.1
+- Microsoft.NET.ILLink.Tasks: 10.0.1
+- Roslynator.Analyzers: 4.15.0
+- Microsoft.VisualStudio.Threading.Analyzers: 17.14.15
+- lookbusy1344.RecordValueAnalyser: 1.2.2
+- Microsoft.NET.Test.Sdk: 18.0.1
+- xunit: 2.9.3
+- coverlet.collector: 6.0.4
