@@ -183,7 +183,7 @@ public class ZipDirTests
 	private static string GetZipDirExecutablePath()
 	{
 		var projectRoot = GetProjectRoot();
-		var executablePath = Path.Combine(projectRoot, "bin", "Debug", "net9.0", "ZipDir");
+		var executablePath = Path.Combine(projectRoot, "bin", "Debug", "net10.0", "ZipDir");
 
 		// On Windows, add .exe extension
 		if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
