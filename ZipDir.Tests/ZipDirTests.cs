@@ -316,7 +316,7 @@ public class ZipDirTests
 		// Arrange
 		var projectRoot = GetProjectRoot();
 		var emptyDir = Path.Combine(projectRoot, "tests", "empty_test_dir");
-		Directory.CreateDirectory(emptyDir);
+		_ = Directory.CreateDirectory(emptyDir);
 
 		try {
 			var startInfo = new ProcessStartInfo {
@@ -430,7 +430,7 @@ public class ZipDirTests
 		// Arrange
 		var projectRoot = GetProjectRoot();
 		var dirWithSpaces = Path.Combine(projectRoot, "tests", "dir with spaces");
-		Directory.CreateDirectory(dirWithSpaces);
+		_ = Directory.CreateDirectory(dirWithSpaces);
 
 		try {
 			// Create a test zip file in the directory
