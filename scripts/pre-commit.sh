@@ -56,7 +56,7 @@ main() {
   # Bash 3 on macOS does not provide mapfile, so collect staged paths manually.
   while IFS= read -r staged_file; do
     staged_files+=("$staged_file")
-  done < <(git diff --cached --name-only --diff-filter=ACMR)
+  done < <(git diff HEAD --name-only --diff-filter=ACMR)
 
   if [[ "${#staged_files[@]}" -eq 0 ]]; then
     echo "No staged files found."
