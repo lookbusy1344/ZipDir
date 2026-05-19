@@ -106,3 +106,7 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 - Microsoft.NET.Test.Sdk: 18.0.1
 - xunit: 2.9.3
 - coverlet.collector: 6.0.4
+
+## Guidelines
+
+- **IMPORTANT** Every `dotnet` Bash call must set `dangerouslyDisableSandbox: true` (build, test, format, run, restore, publish, and any `gtimeout`-wrapped variants). The Claude Code sandbox blocks `dotnet` even when listed in `excludedCommands`: MSBuild's Unix-domain sockets for diagnostic IPC and worker-node communication fail under `network-inbound` deny, and the EPERM surfaces as a silent generic build failure.
