@@ -1,6 +1,6 @@
-using System.IO.Compression;
-
 namespace ZipDir.Tests;
+
+using System.IO.Compression;
 
 public class ZipUtilsTests
 {

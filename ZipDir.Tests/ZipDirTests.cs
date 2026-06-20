@@ -1,7 +1,9 @@
-using System.Diagnostics;
-using Xunit.Abstractions;
-
 namespace ZipDir.Tests;
+
+using System.Diagnostics;
+using System.IO.Compression;
+using System.Reflection;
+using Xunit.Abstractions;
 
 public class ZipDirTests
 {
@@ -22,7 +24,7 @@ public class ZipDirTests
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
 			CreateNoWindow = true,
-			WorkingDirectory = projectRoot
+			WorkingDirectory = projectRoot,
 		};
 
 		// Act
@@ -62,7 +64,7 @@ public class ZipDirTests
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
 			CreateNoWindow = true,
-			WorkingDirectory = projectRoot
+			WorkingDirectory = projectRoot,
 		};
 
 		// Act
@@ -99,7 +101,7 @@ public class ZipDirTests
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
 			CreateNoWindow = true,
-			WorkingDirectory = projectRoot
+			WorkingDirectory = projectRoot,
 		};
 
 		// Act
@@ -141,7 +143,7 @@ public class ZipDirTests
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
 			CreateNoWindow = true,
-			WorkingDirectory = projectRoot
+			WorkingDirectory = projectRoot,
 		};
 
 		// Act
@@ -173,7 +175,7 @@ public class ZipDirTests
 	private static string GetProjectRoot()
 	{
 		// Get the directory where the test assembly is located
-		var testAssemblyPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+		var testAssemblyPath = Assembly.GetExecutingAssembly().Location;
 		var testDir = Path.GetDirectoryName(testAssemblyPath);
 
 		// Navigate to the main project root
@@ -207,7 +209,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act
@@ -238,7 +240,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act
@@ -265,7 +267,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act
@@ -290,7 +292,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act
@@ -325,7 +327,7 @@ public class ZipDirTests
 				UseShellExecute = false,
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
-				CreateNoWindow = true
+				CreateNoWindow = true,
 			};
 
 			// Act
@@ -361,7 +363,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act
@@ -401,7 +403,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act
@@ -435,7 +437,7 @@ public class ZipDirTests
 		try {
 			// Create a test zip file in the directory
 			var zipPath = Path.Combine(dirWithSpaces, "test.zip");
-			using (var archive = System.IO.Compression.ZipFile.Open(zipPath, System.IO.Compression.ZipArchiveMode.Create)) {
+			using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create)) {
 				var entry = archive.CreateEntry("test.txt");
 				using var writer = new StreamWriter(entry.Open());
 				writer.Write("test content");
@@ -447,7 +449,7 @@ public class ZipDirTests
 				UseShellExecute = false,
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
-				CreateNoWindow = true
+				CreateNoWindow = true,
 			};
 
 			// Act
@@ -484,7 +486,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act
@@ -521,7 +523,7 @@ public class ZipDirTests
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
-			CreateNoWindow = true
+			CreateNoWindow = true,
 		};
 
 		// Act

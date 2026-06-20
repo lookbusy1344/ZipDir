@@ -1,5 +1,6 @@
 namespace ZipDir;
 
+using GitVersion;
 using PicoArgs_dotnet;
 
 /*	Displayed syntax should probably be something like:
@@ -14,9 +15,26 @@ using PicoArgs_dotnet;
 
 internal static class Program
 {
+	private const string CommandLineMessage = """
+											  Usage: ZipDir [options]
+
+											  Options:
+											    -f, --folder <path>   Folder to search (default ".")
+											    -p, --pattern <str>   Zip file pattern (default "*.zip")
+											    -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
+											    -b, --byte            Identify zip files by magic number, not extension
+											    -r, --raw             Raw output, for piping
+											    -s, --single-thread   Use a single thread for processing
+											    -h, --help, -?        Help information
+
+											  Example:
+											    ZipDir -f .
+											    ZipDir --folder \your\docs --pattern *.zip --exclude backup --exclude documents
+											  """;
+
 	private static int Main(string[] args)
 	{
-		var ver = GitVersion.VersionInfo.Get();
+		var ver = VersionInfo.Get();
 
 		try {
 			var parsed = ParseCommandLine(args);
@@ -47,7 +65,7 @@ internal static class Program
 	}
 
 	/// <summary>
-	/// Wrap the call to PicoArgs in a using block, so it automatically throws if there are any errors
+	///     Wrap the call to PicoArgs in a using block, so it automatically throws if there are any errors
 	/// </summary>
 	private static ZipDirConfig ParseCommandLine(string[] args)
 	{
@@ -77,7 +95,7 @@ internal static class Program
 	}
 
 	/// <summary>
-	/// Display helpful message if not in --raw mode
+	///     Display helpful message if not in --raw mode
 	/// </summary>
 	internal static void WriteMessage(string msg, bool raw = false, bool blankLine = false)
 	{
@@ -88,21 +106,4 @@ internal static class Program
 			}
 		}
 	}
-
-	private const string CommandLineMessage = """
-											  Usage: ZipDir [options]
-
-											  Options:
-											    -f, --folder <path>   Folder to search (default ".")
-											    -p, --pattern <str>   Zip file pattern (default "*.zip")
-											    -e, --exclude <str>   Exclude patterns, can be specified multiple times "-e backup -e documents"
-											    -b, --byte            Identify zip files by magic number, not extension
-											    -r, --raw             Raw output, for piping
-											    -s, --single-thread   Use a single thread for processing
-											    -h, --help, -?        Help information
-
-											  Example:
-											    ZipDir -f .
-											    ZipDir --folder \your\docs --pattern *.zip --exclude backup --exclude documents
-											  """;
 }

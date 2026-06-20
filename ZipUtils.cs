@@ -5,24 +5,24 @@ using System.IO.Compression;
 internal static class ZipUtils
 {
 	/// <summary>
-	/// Magic number for a zip file. ReadOnlySpan is immutable and will not reallocate in this setting
-	/// See Framework Design Guidelines, 3rd Edition, sec 9.12 page 438
+	///     Magic number for a zip file. ReadOnlySpan is immutable and will not reallocate in this setting
+	///     See Framework Design Guidelines, 3rd Edition, sec 9.12 page 438
 	/// </summary>
 	private static ReadOnlySpan<byte> MagicNumberZip => [0x50, 0x4B, 0x03, 0x04];
 
 	/// <summary>
-	/// Is this a zip file? Check the extension
+	///     Is this a zip file? Check the extension
 	/// </summary>
 	internal static bool IsZipArchiveFilename(string filename) =>
 		filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
-	/// Does this entry represent a nested zip file? Check the extension
+	///     Does this entry represent a nested zip file? Check the extension
 	/// </summary>
 	internal static bool IsZipArchiveFilename(ZipArchiveEntry entry) => IsZipArchiveFilename(entry.FullName);
 
 	/// <summary>
-	/// Build the full path to this entry
+	///     Build the full path to this entry
 	/// </summary>
 	internal static string EntryFilename(string containerName, ZipArchiveEntry entry)
 	{
@@ -32,7 +32,7 @@ internal static class ZipUtils
 	}
 
 	/// <summary>
-	/// Check the magic number of a physical file to see if it is a zip archive
+	///     Check the magic number of a physical file to see if it is a zip archive
 	/// </summary>
 	internal static bool IsZipArchiveContent(string filePath)
 	{
@@ -59,7 +59,7 @@ internal static class ZipUtils
 	}
 
 	/// <summary>
-	/// Check the magic number of a zip entry to see if it is a zip archive
+	///     Check the magic number of a zip entry to see if it is a zip archive
 	/// </summary>
 	internal static bool IsZipArchiveContent(ZipArchiveEntry entry)
 	{
@@ -82,7 +82,7 @@ internal static class ZipUtils
 	}
 
 	/// <summary>
-	/// Check if this open stream contains the magic bytes for a zip archive
+	///     Check if this open stream contains the magic bytes for a zip archive
 	/// </summary>
 	private static bool CheckZipStream(Stream stream)
 	{

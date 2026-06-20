@@ -1,8 +1,8 @@
 namespace ZipDir;
 
 /// <summary>
-/// Configuration for the zipdir command line
-/// Folder is a string so the whole record has value semantics. A DirectoryInfo does not support value semantics.
+///     Configuration for the zipdir command line
+///     Folder is a string so the whole record has value semantics. A DirectoryInfo does not support value semantics.
 /// </summary>
 internal sealed record class ZipDirConfig(
 	bool ByExtension,
@@ -13,7 +13,7 @@ internal sealed record class ZipDirConfig(
 	bool SingleThread)
 {
 	/// <summary>
-	/// Manually implementing Equals so IReadOnlyList Excludes is compared by value
+	///     Manually implementing Equals so IReadOnlyList Excludes is compared by value
 	/// </summary>
 	public bool Equals(ZipDirConfig? other) => other != null
 											   && ByExtension == other.ByExtension
@@ -43,7 +43,7 @@ internal sealed record class ZipDirConfig(
 }
 
 /// <summary>
-/// Exception thrown when help is requested
+///     Exception thrown when help is requested
 /// </summary>
 public class HelpException : Exception
 {

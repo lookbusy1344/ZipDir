@@ -2,12 +2,12 @@ namespace ZipDir;
 
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 internal static class Searcher
 {
 	/// <summary>
-	/// Find all .zip files in this folder, and list their contents (multi-threaded)
+	///     Find all .zip files in this folder, and list their contents (multi-threaded)
 	/// </summary>
 	internal static void SearchFolder(ZipDirConfig config)
 	{
@@ -18,7 +18,7 @@ internal static class Searcher
 		var files = config.Excludes.Count switch {
 			0 => allFiles,
 			1 => [.. allFiles.Where(file => !FileMatchesPattern(file, config.Excludes[0]))],
-			_ => [.. allFiles.Where(file => !config.Excludes.Any(pattern => FileMatchesPattern(file, pattern)))]
+			_ => [.. allFiles.Where(file => !config.Excludes.Any(pattern => FileMatchesPattern(file, pattern)))],
 		};
 
 		if (config.ByExtension) {
@@ -44,7 +44,7 @@ internal static class Searcher
 	}
 
 	/// <summary>
-	/// Expand the folder name to a full path, removing things like ..\..
+	///     Expand the folder name to a full path, removing things like ..\..
 	/// </summary>
 	internal static string NormalizeFolder(string folderName)
 	{
@@ -53,18 +53,18 @@ internal static class Searcher
 	}
 
 	/// <summary>
-	/// Check if a file path matches an exclusion pattern (supports simple wildcards)
+	///     Check if a file path matches an exclusion pattern (supports simple wildcards)
 	/// </summary>
 	private static bool FileMatchesPattern(string filePath, string pattern)
 	{
 		// Simple pattern matching - if pattern contains wildcards, use proper matching
 		if (pattern.Contains('*') || pattern.Contains('?')) {
 			// Convert simple glob pattern to regex for basic wildcard support
-			var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
+			var regexPattern = "^" + Regex.Escape(pattern)
 				.Replace(@"\*", ".*")
 				.Replace(@"\?", ".") + "$";
-			return System.Text.RegularExpressions.Regex.IsMatch(filePath, regexPattern,
-				System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+			return Regex.IsMatch(filePath, regexPattern,
+				RegexOptions.IgnoreCase);
 		}
 
 		// Fallback to simple substring matching for non-wildcard patterns
@@ -75,7 +75,7 @@ internal static class Searcher
 internal sealed class ZipInternals(bool byExtension = true, bool raw = false)
 {
 	/// <summary>
-	/// Wrapper around zip search to handle nested zips
+	///     Wrapper around zip search to handle nested zips
 	/// </summary>
 	internal void CheckZipFile(string path, CancellationToken token = default)
 	{
@@ -84,7 +84,7 @@ internal sealed class ZipInternals(bool byExtension = true, bool raw = false)
 	}
 
 	/// <summary>
-	/// Given a zip archive, loop through and list the contents. Recursively calls for nested zips
+	///     Given a zip archive, loop through and list the contents. Recursively calls for nested zips
 	/// </summary>
 	private void RecursiveArchiveCheck(string containerName, ZipArchive archive, CancellationToken token)
 	{
@@ -117,7 +117,7 @@ internal sealed class ZipInternals(bool byExtension = true, bool raw = false)
 	}
 
 	/// <summary>
-	/// Check this file according to extension, or according to content
+	///     Check this file according to extension, or according to content
 	/// </summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private bool IsZipArchive(ZipArchiveEntry archive) =>

@@ -4,11 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ZipDir is a command-line utility that recursively searches for ZIP files in a directory and lists their contents, including nested ZIP files. The application is built with .NET 10.0 and uses Native AOT compilation for performance.
+ZipDir is a command-line utility that recursively searches for ZIP files in a directory and lists their contents, including nested ZIP files. The
+application is built with .NET 10.0 and uses Native AOT compilation for performance.
 
 ## Development Commands
 
 ### Build and Publish
+
 ```bash
 # Clean the project
 dotnet clean --verbosity minimal
@@ -27,6 +29,7 @@ dotnet publish ZipDir.csproj -c Release -r win-arm64 -p:PublishSingleFile=true -
 ```
 
 ### Security and Analysis
+
 ```bash
 # Check for vulnerabilities
 dotnet restore
@@ -34,12 +37,14 @@ dotnet list package --vulnerable --include-transitive
 ```
 
 ### Testing
+
 ```bash
 # Run automated tests (27 tests as of current version)
 dotnet test
 ```
 
 **Current Test Status:** 27 passing unit and integration tests covering:
+
 - ZIP file detection (by extension and magic number)
 - Nested ZIP processing
 - Pattern matching and exclusion
@@ -48,6 +53,7 @@ dotnet test
 - Configuration validation
 
 ### Code Style and Analysis
+
 ```bash
 # Format code according to .editorconfig rules (run after making changes)
 dotnet format ZipDir.csproj
@@ -55,6 +61,7 @@ dotnet format ZipDir.Tests/ZipDir.Tests.csproj
 ```
 
 The project enforces strict code analysis with Roslynator and other analyzers. All analysis modes are enabled:
+
 - Design, Security, Performance, Reliability, Usage analysis are all set to "All"
 - EnforceCodeStyleInBuild is enabled
 - Uses comprehensive .editorconfig with C# coding conventions
@@ -72,6 +79,7 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 6. **PicoArgs.cs** - Command-line argument parsing library
 
 ### Key Features
+
 - Supports both extension-based and magic number-based ZIP detection
 - Multi-threaded and single-threaded processing modes
 - Raw output mode for piping
@@ -79,6 +87,7 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 - Nested ZIP file processing
 
 ### Code Conventions
+
 - Uses file-scoped namespaces
 - Comprehensive .editorconfig with strict formatting rules
 - Tab character indentation for CS files
@@ -87,17 +96,20 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 - Extensive analyzer rules configured in .editorconfig
 
 ### Dependencies
+
 - **PicoArgs-dotnet**: Command-line argument parsing
 - **Native AOT**: For performance optimization
 - **Multiple analyzers**: Roslynator, RecordValueAnalyser, Threading analyzers
 
 ## Project Structure
+
 - Single executable project targeting .NET 10.0
 - Unit test project (ZipDir.Tests) with comprehensive test coverage (27 tests)
 - Uses record types for configuration with value semantics
 - Implements custom equality for collections in records
 
 ## Current Package Versions
+
 - Microsoft.DotNet.ILCompiler: 10.0.1
 - Microsoft.NET.ILLink.Tasks: 10.0.1
 - Roslynator.Analyzers: 4.15.0
@@ -109,4 +121,6 @@ The project enforces strict code analysis with Roslynator and other analyzers. A
 
 ## Guidelines
 
-- **IMPORTANT** Every `dotnet` Bash call must set `dangerouslyDisableSandbox: true` (build, test, format, run, restore, publish, and any `gtimeout`-wrapped variants). The Claude Code sandbox blocks `dotnet` even when listed in `excludedCommands`: MSBuild's Unix-domain sockets for diagnostic IPC and worker-node communication fail under `network-inbound` deny, and the EPERM surfaces as a silent generic build failure.
+- **IMPORTANT** Every `dotnet` Bash call must set `dangerouslyDisableSandbox: true` (build, test, format, run, restore, publish, and any `gtimeout`
+  -wrapped variants). The Claude Code sandbox blocks `dotnet` even when listed in `excludedCommands`: MSBuild's Unix-domain sockets for diagnostic IPC
+  and worker-node communication fail under `network-inbound` deny, and the EPERM surfaces as a silent generic build failure.
