@@ -1,5 +1,5 @@
 # For command-line and ASP.NET apps, and UI combined
-# 30 Jun 2026
+# 01 Jul 2026
 
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
@@ -230,6 +230,9 @@ dotnet_diagnostic.IDE0042.severity = none
 # Threading Warnings (VSTHRD)
 dotnet_diagnostic.VSTHRD111.severity = silent
 dotnet_diagnostic.VSTHRD103.severity = none # Duplicate of CA1849
+dotnet_diagnostic.VSTHRD001.severity = none # legacy thread-switch APIs, not relevant outside VSIX
+dotnet_diagnostic.VSTHRD002.severity = warning # catches sync-over-async deadlocks
+dotnet_diagnostic.VSTHRD100.severity = warning # avoid async void
 
 
 # =====================================================================
@@ -288,14 +291,14 @@ dotnet_diagnostic.rcs9001.severity = suggestion # Use pattern matching
 
 
 # ---------------------------------------------------------------------
-# .NET 10 / Roslyn 18.x analyzer escalations
+# .NET 10 analyzer escalations
 # ---------------------------------------------------------------------
 
 # Async method lacking await. CS1998 was removed entirely in Roslyn 18.0 (dotnet/roslyn#80144);
 # IDE0390/IDE0391 reintroduce the check as opt-in fixers in 18.4 (#81835). Default severity is
 # silent, so these lines are what turn it on. NB: under TreatWarningsAsErrors they build as errors.
 dotnet_diagnostic.IDE0390.severity = warning # Methods and lambdas that can drop 'async'.
-dotnet_diagnostic.IDE0391.severity = warning # Interface impls / overrides where 'async' is unnecessary.
+dotnet_diagnostic.IDE0391.severity = suggestion # Interface impls / overrides where 'async' is unnecessary.
 
 # System.Threading.Lock type safety (see C# lock-statement compiler messages).
 # CS9216 (warning by default): a Lock converted to another type (e.g. object) falls back to
