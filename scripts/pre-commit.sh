@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-# Install with:
+# Works in jj and plain Git checkouts.
+#
+# jj: no commit hooks, so run it directly before `jj commit`, `jj describe`
+# (finalising) and `jj squash`. It checks the files changed in `@`.
+#
+# Git: install as a hook, it checks the files changed against HEAD:
 #   ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit
 #   chmod +x .git/hooks/pre-commit
 #
@@ -9,16 +14,20 @@
 #     echo "Missing executable scripts/pre-commit.sh" >&2
 #     exit 1
 # fi
+#
 # exec ./scripts/pre-commit.sh
 
 
 set -euo pipefail
 
-readonly SOLUTION_FILE="ZipDir.sln"
-readonly TEST_TIMEOUT_SECONDS="60"
-readonly FORMAT_FIX_COMMAND="dotnet format ${SOLUTION_FILE}"
+# GUI git clients launch hooks with a minimal PATH that omits the user-local
+# dotnet install and Homebrew binaries (gtimeout). Add the common locations so
+# the hook resolves the same tools as an interactive shell.
+export PATH="$HOME/.dotnet:/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-# Keep docs-only commits fast by skipping the .NET validation pipeline.
+readonly SOLUTION_PATH="ZipDir.sln"
+readonly TEST_TIMEOUT_SECONDS="60"
+
 is_documentation_file() {
   local path="$1"
 
@@ -38,28 +47,39 @@ requires_dotnet_checks() {
     || [[ "$path" == *.targets ]]
 }
 
-run_format_check() {
-  if dotnet format "$SOLUTION_FILE" --verify-no-changes; then
-    return 0
+changed_files() {
+  if [[ -z "${GIT_INDEX_FILE:-}" ]] && jj --ignore-working-copy root > /dev/null 2>&1; then
+    jj diff --name-only -r @ --no-pager
+  else
+    git diff HEAD --name-only --diff-filter=ACMR
   fi
+}
 
-  echo
-  echo "Formatting issues detected."
-  echo "Run \`$FORMAT_FIX_COMMAND\` to apply the required fixes, then re-stage any updated files."
-  return 1
+collect_staged_files() {
+  local staged_file
+
+  while IFS= read -r staged_file; do
+    [[ -n "$staged_file" ]] && printf '%s\n' "$staged_file"
+  done < <(changed_files)
+}
+
+run_dotnet_checks() {
+  echo "Running pre-commit checks for staged .NET files..."
+  dotnet build --configuration Debug --no-restore
+  dotnet format "$SOLUTION_PATH" --verify-no-changes
+  gtimeout "$TEST_TIMEOUT_SECONDS" dotnet test --no-restore
 }
 
 main() {
   local staged_files=()
   local staged_file
 
-  # Bash 3 on macOS does not provide mapfile, so collect staged paths manually.
   while IFS= read -r staged_file; do
     staged_files+=("$staged_file")
-  done < <(git diff HEAD --name-only --diff-filter=ACMR)
+  done < <(collect_staged_files)
 
   if [[ "${#staged_files[@]}" -eq 0 ]]; then
-    echo "No staged files found."
+    echo "No modified files found."
     exit 0
   fi
 
@@ -81,16 +101,12 @@ main() {
     exit 0
   fi
 
-  # Non-doc changes still skip the expensive checks unless .NET-relevant files are staged.
   if [[ "$has_dotnet_files" == "false" ]]; then
-    echo "No staged .NET source or build files detected. Skipping .NET checks."
+    echo "No modified .NET source or build files detected. Skipping .NET checks."
     exit 0
   fi
 
-  echo "Running pre-commit checks for staged .NET files..."
-  dotnet build "$SOLUTION_FILE"
-  run_format_check
-  gtimeout "$TEST_TIMEOUT_SECONDS" dotnet test
+  run_dotnet_checks
 }
 
 main "$@"
