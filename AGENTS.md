@@ -17,6 +17,9 @@ its exit status. If it prints a path, the repo is jj. This may be a jj repo on o
 
 jj has no commit hooks. Run `scripts/pre-commit.sh` before `jj commit`, `jj describe` (when finalising a change) and `jj squash`. It checks the files
 changed in `@` and skips the dotnet steps when only non-code files (`*.md`) changed. In a plain Git checkout `.git/hooks/pre-commit` runs it.
+`scripts/agent-pre-commit-hook.sh` runs it on every `jj commit` and `jj squash` and blocks the command on failure. Claude Code and Codex call it as a
+`PreToolUse` hook. It does not gate `jj describe`; run the checks yourself when finalising. It gates `git commit` only when no Git pre-commit hook is
+installed.
 
 jj does not apply `.gitattributes` line-ending conversion. A file with CRLF on disk shows as modified against an LF blob. Convert it to LF.
 

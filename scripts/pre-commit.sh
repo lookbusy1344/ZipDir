@@ -74,6 +74,8 @@ main() {
   local staged_files=()
   local staged_file
 
+  cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
   while IFS= read -r staged_file; do
     staged_files+=("$staged_file")
   done < <(collect_staged_files)
